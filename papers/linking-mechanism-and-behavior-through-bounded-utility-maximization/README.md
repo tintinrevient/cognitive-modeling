@@ -39,7 +39,7 @@ the solution to an optimal program problem is the **optimal program**:
 * **optimality (Type I)**: it can be thought of as **rational analysis** in which only the **local evaluation environment** plays a role in determing behavior.
 * **ecological optimality (Type II)**: it can be thought of as **rational analysis** in which **ecological environments of adaptation** have shaped behavior, e.g. Wason selection task.
 * **bounded optimality (Type III)**: e.g. Psychological Refractory Period (PRP) task.
-* **ecologically bounded optimality (Type IV)**: e.g. Visual attention in a linguistic task.
+* **ecologically bounded optimality (Type IV)**: e.g. List Lexical Decision Task (LLDT).
 
 <p float="left">
 	<img src="./pix/example.png" width="800" />
