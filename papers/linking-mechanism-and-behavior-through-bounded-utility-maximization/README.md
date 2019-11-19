@@ -27,7 +27,8 @@ it demands three inputs:
 * **a utility function**
 
 the solution to an optimal program problem is the **optimal program**:
-* executed on the bounded agent (**bounded information-processing agents**: the behavior is influenced by **history**, thus allowing for **learning**)
+* executed on the bounded agent 
+	* **bounded information-processing agents**: the behavior is influenced by **history**, thus allowing for **learning**
 * in the given adaptation or ecological environment
 * maximize utility
 	* **task goals**
