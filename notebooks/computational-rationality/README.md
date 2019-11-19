@@ -15,7 +15,9 @@
 
 ## Computational Rationality in Neuroscience
 
-* Maze example
+<p float="left">
+	<img src="./pix/maze.png" width="600" />
+</p>
 
 ## Process Model
 
