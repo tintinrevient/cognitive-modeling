@@ -10,8 +10,8 @@
 * the brain is equipped with metareasoning mechanism sensitive to the costs of cognition.
 
 <p float="left">
-	<img src="./pix/metareasoning-1.png" width="600" />
-	<img src="./pix/metareasoning-2.png" width="600" />
+	<img src="./pix/metareasoning-1.png" width="700" />
+	<img src="./pix/metareasoning-2.png" width="700" />
 </p>
 
 **sequential decision-making**
