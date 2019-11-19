@@ -5,7 +5,7 @@ a separation between:
 * **lower mechanism levels** that approximately implement those goals (**"how" explanations of behavior**)
 
 <p float="left">
-	<img src="separation.png" width="800" />
+	<img src="./pix/separation.png" width="800" />
 </p>
 
 **computational rationality**
@@ -16,7 +16,7 @@ a separation between:
 * programs are shaped by both **information-processing mechanisms** and **environment structure**.
 
 <p float="left">
-	<img src="computational-rationality.png" width="800" />
+	<img src="./pix/computational-rationality.png" width="800" />
 </p>
 
 **optimal program problem**
@@ -41,22 +41,22 @@ the solution to an optimal program problem is the **optimal program**:
 * **ecologically bounded optimality (Type IV)**: e.g. Visual attention in a linguistic task.
 
 <p float="left">
-	<img src="example.png" width="800" />
+	<img src="./pix/example.png" width="800" />
 </p>
 
 **Psychological Refractory Period (PRP)** example:
 * the **bounded optimal programs for the serial bounded machine** are a better predictor of the human data than the **bounded optimal program for the parallel bounded machine**.
 
 <p float="left">
-	<img src="prp-1.png" width="800" />
-	<img src="prp-2.png" width="800" />
+	<img src="./pix/prp-1.png" width="800" />
+	<img src="./pix/prp-2.png" width="800" />
 </p>
 
 **List Lexical Decision Task (LLDT)** example:
 * the payoff surface for all three utilities is expressed over one of the behavioral outcomes: **single fixation durations (SFDs)**.
 
 <p float="left">
-	<img src="lldt-1.png" width="800" />
-	<img src="lldt-2.png" width="800" />
-	<img src="lldt-3.png" width="800" />
+	<img src="./pix/lldt-1.png" width="800" />
+	<img src="./pix/lldt-2.png" width="800" />
+	<img src="./pix/lldt-3.png" width="800" />
 </p>
