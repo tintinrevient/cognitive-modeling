@@ -5,9 +5,9 @@
 
 **deviation = &Sigma;(observed - model)<sup>2</sup>**
 
-**linear model** vs **non-linear model**:
-
 ## Model
+
+**linear model** vs **non-linear model**:
 
 <p float="left">
 	<img src="./pix/linear-nonlinear-model.png" width="800" />
