@@ -55,7 +55,7 @@ two ways to test a hypothesis:
 * in both independent-measures and repeated-measures designs, it is important to keep the unsystematic variation to a minimum.
 * **randomization**: 
 	* in a repeated-measures design, we eliminate **practice effects** and **boredom effects** by **counterbalancing** the order in which a person participates in a condition.
-	* in a independent-measures design, we ensure the confounding variables are **evenly distributed** across conditions.
+	* in an independent-measures design, we ensure the confounding variables are **evenly distributed** across conditions.
 
 ## Data Analysis
 * **frequency distribution** = **histogram**
