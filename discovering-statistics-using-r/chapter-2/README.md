@@ -24,7 +24,7 @@ measures of how well the model fits:
 - [x] **standard deviation**
 
 <p float="left">
-	<img src="./pix/measure.png" width="800" />
+	<img src="./pix/measure.png" width="900" />
 </p>
 
 **the standard deviation is a measure of how well the mean represents the data.**
