@@ -1,5 +1,8 @@
 # Chapter 1
 
+## Goal
+**identify and measure cause and effect!**
+
 ## Research Process
 
 - [x] **quantitative methods**
