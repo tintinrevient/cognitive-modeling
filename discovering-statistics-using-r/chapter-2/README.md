@@ -7,6 +7,8 @@
 
 **linear model** vs **non-linear model**:
 
+## Model
+
 <p float="left">
 	<img src="./pix/linear-nonlinear-model.png" width="800" />
 </p>
