@@ -41,8 +41,10 @@ measures of how well the model fits:
 </p>
 
 **sampling variation**: samples will vary because they contain different members of the population.
+
 **sampling distribution**: the frequency distribution of **sample means** from the same population.
 	* when samples > 30, sampling distribution = **normal distribution**
 	* when samples < 30, sampling distribution = **t-distribution**
+
 **standard error of the mean**: the standard deviation of **sample means** = a measure of how well a sample is representative of the population.
 
