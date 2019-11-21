@@ -2,6 +2,7 @@
 
 ## Core
 **observed<sub>i</sub> = (model) + error<sub>i</sub>**
+
 **deviation = &Sigma;(observed - model)<sup>2</sup>**
 
 **linear model** vs **non-linear model**:
