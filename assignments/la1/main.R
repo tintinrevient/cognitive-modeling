@@ -62,19 +62,41 @@ deviationMean <- function(){
 plotDeviation <- function(){ 
   frame <- data.frame(
     keypress = keyPressDataWithLaneDeviation$phoneNrLengthAfterKeyPress,
-    type = keyPressDataWithLaneDeviation$partOfExperiment,
-    dialingTime = keyPressDataWithLaneDeviation$timeRelativeToTrialStart,
+    participant = keyPressDataWithLaneDeviation$pp,
+    dialingTime = round(keyPressDataWithLaneDeviation$timeRelativeToTrialStart / 1000, digits = 1),
     deveation = abs(keyPressDataWithLaneDeviation$lanePosition),
+    type = keyPressDataWithLaneDeviation$partOfExperiment,
     error = keyPressDataWithLaneDeviation$typingErrorMadeOnTrial
   )
   
-  subFrame <- frame[frame$type == "dualSteerFocus" | frame$type == "dualDialFocus",]
-  subFrame <- subFrame[subFrame$error == 0,]
+  subFrame <- frame[frame$error == 0,]
+  subFrameSF <- subFrame[subFrame$type == "dualSteerFocus",]
+  subFrameDF <- subFrame[subFrame$type == "dualDialFocus",]
   
   
+  #per participant per key per per condiciotn
+  meanPerKeySF <- aggregate(subFrameSF[3:4], by=list(subFrameSF$keypress), FUN = mean)
+  meanPerKeyDF <- aggregate(subFrameDF[3:4], by=list(subFrameDF$keypress), FUN = mean)
   
-
-  plot(subFrame$dialingTime, subFrame$deveation)
+  xrange <- range(0:10)
+  yrange <- range(0:1)
+  
+  plot(xrange, yrange, type = "n", xlab = "Dailing Time (s)", ylab = "Lateral Deviation (m)")
+  
+  colors <- rainbow(2)
+  linetype <- c(1:2)
+  plotchar <- seq(18,18+2,1)
+  
+  
+  lines(meanPerKeySF$dialingTime, meanPerKeySF$deveation, type = "b" , lwd=1.5,
+        lty=linetype[1], col=colors[1], pch=plotchar[1])
+  lines(meanPerKeyDF$dialingTime, meanPerKeyDF$deveation, type = "b", lwd=1.5,
+        lty=linetype[2], col=colors[2], pch=plotchar[2])
+  
+  title("Lateral Deviation by time")
+  
+  legend(xrange[1], yrange[2], c("Steering focus", "Dailing Focus"), cex=0.8, col=colors,
+         pch=plotchar, lty=linetype, title="Stuff")
 }
 
 print(timeMeans())
