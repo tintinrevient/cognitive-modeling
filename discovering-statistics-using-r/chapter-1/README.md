@@ -72,3 +72,7 @@ two ways to test a hypothesis:
 	<img src="./pix/normal-distribution.png" width="500" />
 	<img src="./pix/interquartile-range.png" width="500" />
 </p>
+
+## Confidence
+
+**test statistic** = (variance explained by the model) / (variance not explained by the model) = (systematic variation) / (unsystematic variation) = effect / error
