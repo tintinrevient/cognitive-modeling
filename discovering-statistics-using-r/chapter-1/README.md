@@ -79,7 +79,6 @@ two ways to test a hypothesis:
 
 we can test whether our statistical **models** (and therefore our **hypotheses**) are significant **fits of the data** we collected.
 
-**test statistic** 
-	= (variance explained by the model) / (variance not explained by the model) 
-	= (systematic variation) / (unsystematic variation) 
-	= effect / error
+**test statistic**  = (variance explained by the model) / (variance not explained by the model) 
+**test statistic**  = (systematic variation) / (unsystematic variation) 
+**test statistic**  = effect / error
