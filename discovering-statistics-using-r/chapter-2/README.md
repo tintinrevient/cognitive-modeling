@@ -67,15 +67,15 @@ measures of how well the model fits:
 * a statistical model that tests a directional hypothesis.
 
 <p float="left">
-	<img src="./pix/one-tailed-test-1.png" width="400" />
-	<img src="./pix/one-tailed-test-2.png" width="400" />
+	<img src="./pix/one-tailed-test-1.gif" width="400" />
+	<img src="./pix/one-tailed-test-2.gif" width="400" />
 </p>
 
 **two-tailed test**
 * a statistical model that tests a non-directional hypothesis.
 
 <p float="left">
-	<img src="./pix/two-tailed-test-1.png" width="400" />
+	<img src="./pix/two-tailed-test-1.gif" width="400" />
 </p>
 
 **Type I error**
