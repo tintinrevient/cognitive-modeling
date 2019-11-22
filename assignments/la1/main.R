@@ -38,7 +38,7 @@ deviationMean <- function(){
     deveation = abs(keyPressDataWithLaneDeviation$lanePosition)
   )
   subFrame <- frame[frame$type == "dualSteerFocus" | frame$type == "dualDialFocus",]
-  
+  summary(subFrame)
   mean <- aggregate(subFrame$deveation, by=list(subFrame$type), FUN=mean)
   sd <- aggregate(subFrame$deveation, by=list(subFrame$type), FUN=sd)
   
@@ -59,37 +59,25 @@ deviationMean <- function(){
   return(endFrame)
 }
 
-plotD <- function(){ 
+plotDeviation <- function(){ 
   frame <- data.frame(
-    participant = keyPressDataWithLaneDeviation$pp,
     keypress = keyPressDataWithLaneDeviation$phoneNrLengthAfterKeyPress,
     type = keyPressDataWithLaneDeviation$partOfExperiment,
     dialingTime = keyPressDataWithLaneDeviation$timeRelativeToTrialStart,
+    deveation = abs(keyPressDataWithLaneDeviation$lanePosition),
     error = keyPressDataWithLaneDeviation$typingErrorMadeOnTrial
   )
   
-  subFrame <- frame[frame$keypress == 11,]
+  subFrame <- frame[frame$type == "dualSteerFocus" | frame$type == "dualDialFocus",]
   subFrame <- subFrame[subFrame$error == 0,]
-  subFrame <- subFrame[subFrame$type == "dualSteerFocus" | subFrame$type == "dualDialFocus",]
   
-  mean <- aggregate(subFrame$dialingTime, by=list(subFrame$type), FUN=mean)
   
-  sd <- aggregate(subFrame$dialingTime, by=list(subFrame$type), FUN=sd)
   
-  amountOfParticipants <- length(unique(frame$participant))
-  print(amountOfParticipants)
-  
-  se <- sd$x / sqrt(amountOfParticipants)
-  
-  endFrame <- data.frame(
-    Type = unique(subFrame$type),
-    Mean = round(mean$x / 1000, digits = 1),
-    SD = round(sd$x / 1000, digits = 1),
-    SE = round(se / 1000, digits = 1)
-  )
-  return(endFrame)
+
+  plot(subFrame$dialingTime, subFrame$deveation)
 }
 
 print(timeMeans())
 print(deviationMean())
+plotDeviation()
 
