@@ -72,22 +72,3 @@ two ways to test a hypothesis:
 	<img src="./pix/normal-distribution.png" width="500" />
 	<img src="./pix/interquartile-range.png" width="500" />
 </p>
-
-* **confidence interval**: 
-	* if **the mean represents the true mean** well, then 95% of the **confidence interval of that mean should be small**.
-	* if two means' **confidence intervals overlap**, these means could plausibly come from the **same population**.
-	* if two means' **confidence intervals do not overlap**, then we can infer that these means are from **different populations**.
-	* a confidence interval for the mean is a range of scores constructed such that the **population mean** will fall within this range **in 95% of samples**.
-<p float="left">
-	<img src="./pix/confidence-interval.png" width="500" />
-</p>
-
-## Test Statistic
-
-we can test whether our statistical **models** (and therefore our **hypotheses**) are significant **fits of the data** we collected.
-
-**test statistic**  = (variance explained by the model) / (variance not explained by the model) = (systematic variation) / (unsystematic variation) = effect / error
-
-the bigger the test statistic is, the more **unlikely** it is to **occur by chance**.
-
-
