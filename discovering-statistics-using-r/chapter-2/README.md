@@ -55,10 +55,34 @@ measures of how well the model fits:
 * a confidence interval for the mean is a range of scores constructed such that the **population mean** will fall within this range **in 95% of samples**.
 
 <p float="left">
-	<img src="./pix/confidence-interval.png" width="500" />
+	<img src="./pix/confidence-interval.png" width="800" />
 </p>
 
 **test statistic**
 * we can test whether our statistical **models** (and therefore our **hypotheses**) are significant **fits of the data** we collected.
 * **test statistic**  = (variance explained by the model) / (variance not explained by the model) = (systematic variation) / (unsystematic variation) = effect / error
 * the bigger the test statistic is, the more **unlikely** it is to **occur by chance**.
+
+**one-tailed test**
+* a statistical model that tests a directional hypothesis.
+
+<p float="left">
+	<img src="./pix/one-tailed-test-1.png" width="400" />
+	<img src="./pix/one-tailed-test-2.png" width="400" />
+</p>
+
+**two-tailed test**
+* a statistical model that tests a non-directional hypothesis.
+
+<p float="left">
+	<img src="./pix/two-tailed-test-1.png" width="400" />
+</p>
+
+**Type I error**
+* it occurs when we believe that there is a genuine **effect in our population**, when in fact **there isn't**.
+* the probability of this error is 5% = \alpha-level
+
+**Type II error**
+* it occurs when we believe that there is **no effect in the population**, when in fact **there is**.
+* the maximum acceptable probability of this error is 20%  = \beta-level
+* as the probability of making a **Type I error decreases**, the probability of making a **Type II error increases**.
