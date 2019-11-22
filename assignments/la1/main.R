@@ -30,5 +30,5 @@ endFrame <- data.frame(
   SD = round(sd$x / 1000, digits = 1),
   SE = round(se / 1000, digits = 1)
 )
-view(endFrame)
+print(endFrame)
 
