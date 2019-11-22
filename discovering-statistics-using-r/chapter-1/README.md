@@ -73,7 +73,14 @@ two ways to test a hypothesis:
 	<img src="./pix/interquartile-range.png" width="500" />
 </p>
 
-## Confidence
+* **confidence interval**: 
+	* if **the mean represents the true mean** well, then 95% of the **confidence interval of that mean should be small**.
+	* if two means' **confidence intervals overlap**, these means could plausibly come from the **same population**.
+	* if two means' **confidence intervals do not overlap**, then we can infer that these means are from **different populations**.
+	* a confidence interval for the mean is a range of scores constructed such that the **population mean** will fall within this range **in 95% of samples**.
+<p float="left">
+	<img src="./pix/confidence-interval.png" width="500" />
+</p>
 
 ## Test Statistic
 
