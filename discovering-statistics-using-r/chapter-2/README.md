@@ -80,9 +80,9 @@ measures of how well the model fits:
 
 **Type I error**
 * it occurs when we believe that there is a genuine **effect in our population**, when in fact **there isn't**.
-* the probability of this error is 5% = \alpha-level
+* the probability of this error is 5% = α-level
 
 **Type II error**
 * it occurs when we believe that there is **no effect in the population**, when in fact **there is**.
-* the maximum acceptable probability of this error is 20%  = \beta-level
+* the maximum acceptable probability of this error is 20%  = β-level
 * as the probability of making a **Type I error decreases**, the probability of making a **Type II error increases**.
