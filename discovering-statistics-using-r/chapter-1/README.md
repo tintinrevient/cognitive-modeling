@@ -14,6 +14,8 @@
 
 * **theory**
 * **hypothesis**: a prediction from a theory.
+	* **alternative hypothesis**: a position that states something is happening.
+	* **null hypothesis**: a default position that there is nothing new happening, e.g., there is no association among groups or no relationship between two measured phenomena.
 * **scientific statement** can be proved or disproved (**falsification**) empirically.
 * good theories should produce hypotheses that are scientific statements.
 
