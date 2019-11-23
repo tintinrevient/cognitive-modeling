@@ -1,105 +1,81 @@
-load("keyPressDataWithLaneDeviation.Rdata")
-
-
-timeMeans <- function(){ 
-  frame <- data.frame(
-    participant = keyPressDataWithLaneDeviation$pp,
-    keypress = keyPressDataWithLaneDeviation$phoneNrLengthAfterKeyPress,
-    type = keyPressDataWithLaneDeviation$partOfExperiment,
-    dialingTime = keyPressDataWithLaneDeviation$timeRelativeToTrialStart,
-    error = keyPressDataWithLaneDeviation$typingErrorMadeOnTrial
-    )
-  
-  subFrame <- frame[frame$keypress == 11,]
-  subFrame <- subFrame[subFrame$error == 0,]
-  subFrame <- subFrame[subFrame$type == "dualSteerFocus" | subFrame$type == "dualDialFocus",]
-  
-  mean <- aggregate(subFrame$dialingTime, by=list(subFrame$type), FUN=mean)
-  
-  sd <- aggregate(subFrame$dialingTime, by=list(subFrame$type), FUN=sd)
-  
-  amountOfParticipants <- length(unique(frame$participant))
-  print(amountOfParticipants)
-  
-  se <- sd$x / sqrt(amountOfParticipants)
-  
-  endFrame <- data.frame(
-    Type = unique(subFrame$type),
-    Mean = round(mean$x / 1000, digits = 1),
-    SD = round(sd$x / 1000, digits = 1),
-    SE = round(se / 1000, digits = 1)
+#load("keyPressDataWithLaneDeviation.Rdata")
+dfcFrame <- read.csv("tableOfDriftValuesCalibration.csv", header = TRUE)
+plotA <- function(){  
+  subFrame <- subset(dfcFrame, dfcFrame$trialTime >= 15000 & dfcFrame$trialTime <= 18000, select = c("trial", "posX", "trialTime"))
+  plotFrame <- data.frame(
+    trial = subFrame$trial,
+    timeInSeconds = subFrame$trialTime / 1000,
+    lanePosition = subFrame$posX
   )
-  return(endFrame)
+  
+  xrange <- range(plotFrame$timeInSeconds)
+  yrange <- range(plotFrame$lanePosition)
+  
+  plot(xrange, yrange, type = "n", xlab = "Time (s)", ylab = "Deviation (m)")
+  
+  ntrial <- length(unique(plotFrame$trial))
+  colors <- rainbow(ntrial)
+  
+  for(i in 1:ntrial){
+    lines(plotFrame$timeInSeconds[plotFrame$trial == i], plotFrame$lanePosition[plotFrame$trial == i], 
+          type = "l" , lwd=1.5, col=colors[i], lty = 1)
+  }
+  
+  legend(xrange[1], yrange[2], 1:ntrial, cex=0.5, col=colors, lty=1, title="Trials")
+  
+  title("Deviation by time")
+  plotFrame$lanePosition
 }
 
-deviationMean <- function(){ 
-  frame <- data.frame(
-    type = keyPressDataWithLaneDeviation$partOfExperiment,
-    deveation = abs(keyPressDataWithLaneDeviation$lanePosition)
+plotB <- function(){
+  subFrame <- subset(dfcFrame, dfcFrame$trialTime >= 15000 & dfcFrame$trialTime <= 18000, select = c("trial", "posX", "trialTime"))
+  plotFrame <- data.frame(
+    trial = subFrame$trial,
+    timeInMs = subFrame$trialTime,
+    lanePosition = subFrame$posX
   )
-  subFrame <- frame[frame$type == "dualSteerFocus" | frame$type == "dualDialFocus",]
-  summary(subFrame)
-  mean <- aggregate(subFrame$deveation, by=list(subFrame$type), FUN=mean)
-  sd <- aggregate(subFrame$deveation, by=list(subFrame$type), FUN=sd)
   
-  amountOfSteerFocus <- length(subFrame[subFrame$type == "dualSteerFocus", ])
-  amountOfDialFocus <- length(subFrame[subFrame$type == "dualDialFocus", ])
+  ntrial <- 20#length(unique(plotFrame$trial))
+  colors <- rainbow(ntrial)
   
-  print(amountOfDialFocus) #5
-  print(amountOfSteerFocus)
+  xrange <- range(0:3000)
+  yrange <- range(-3:3)
   
-  se <- sd$x / sqrt(amountOfDialFocus)
+  plot(xrange, yrange, type = "n", xlab = "Time (ms)", ylab = "Deviation (m)")
+  # mean <- with(plotFrame, aggregate(lanePosition, list(trial), mean))
+  # sd <- with(plotFrame , aggregate(lanePosition, list(trial), sd))
   
-  endFrame <- data.frame(
-    Type = unique(subFrame$type),
-    Mean = mean$x,
-    SD = sd$x,
-    SE = se
-  )
-  return(endFrame)
+  for(i in 1:ntrial){
+    #trialData <- plotFrame[plotFrame$trial == i,]
+    #mean <- with(trialData, aggregate(lanePosition, list(trial), mean))
+    #sd <- with(trialData, aggregate(lanePosition, list(trial), sd))
+    
+    #rn <- rnorm(60, mean = mean$x, sd = sd$x)
+    
+    rn <- rnorm(3000 / 50, mean = 0, sd = 0.13)
+    rn <- cumsum(rn)
+    lines(seq(1, 3000, 50), rn, type = "l" , lwd=1.5, col=colors[i], lty = 1)
+  }
+  
+  title("Simulated deviation by time")
+  rn
 }
 
-plotDeviation <- function(){ 
-  frame <- data.frame(
-    keypress = keyPressDataWithLaneDeviation$phoneNrLengthAfterKeyPress,
-    participant = keyPressDataWithLaneDeviation$pp,
-    dialingTime = round(keyPressDataWithLaneDeviation$timeRelativeToTrialStart / 1000, digits = 1),
-    deveation = abs(keyPressDataWithLaneDeviation$lanePosition),
-    type = keyPressDataWithLaneDeviation$partOfExperiment,
-    error = keyPressDataWithLaneDeviation$typingErrorMadeOnTrial
-  )
-  
-  subFrame <- frame[frame$error == 0,]
-  subFrameSF <- subFrame[subFrame$type == "dualSteerFocus",]
-  subFrameDF <- subFrame[subFrame$type == "dualDialFocus",]
-  
-  
-  #per participant per key per per condiciotn
-  meanPerKeySF <- aggregate(subFrameSF[3:4], by=list(subFrameSF$keypress), FUN = mean)
-  meanPerKeyDF <- aggregate(subFrameDF[3:4], by=list(subFrameDF$keypress), FUN = mean)
-  
-  xrange <- range(0:10)
-  yrange <- range(0:1)
-  
-  plot(xrange, yrange, type = "n", xlab = "Dailing Time (s)", ylab = "Lateral Deviation (m)")
-  
-  colors <- rainbow(2)
-  linetype <- c(1:2)
-  plotchar <- seq(18,18+2,1)
-  
-  
-  lines(meanPerKeySF$dialingTime, meanPerKeySF$deveation, type = "b" , lwd=1.5,
-        lty=linetype[1], col=colors[1], pch=plotchar[1])
-  lines(meanPerKeyDF$dialingTime, meanPerKeyDF$deveation, type = "b", lwd=1.5,
-        lty=linetype[2], col=colors[2], pch=plotchar[2])
-  
-  title("Lateral Deviation by time")
-  
-  legend(xrange[1], yrange[2], c("Steering focus", "Dailing Focus"), cex=0.8, col=colors,
-         pch=plotchar, lty=linetype, title="Stuff")
+plotC <- function(dataReal, dataSim){
+  hist(dataReal)
+  hist(dataSim)
 }
 
-print(timeMeans())
-print(deviationMean())
-plotDeviation()
+par(mfrow=c(2,2))
+lda <- plotA()
+ldb <- plotB()
+plotC(lda, ldb)
+
+sda <- sd(lda)
+sda
+sdb<- sd(ldb)
+sdb
+
+
+
 
