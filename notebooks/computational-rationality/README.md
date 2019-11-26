@@ -35,6 +35,7 @@ Varieties:
 * **Why** (and **When**) such fallacies happen
 * **What** causes those fallacies
 * **How** they are implemented in the brain
+* because **behavior is not perfect** with **illogical conclusions/choices**
 
 **Computational Rationality** approaches:
 - [ ] Type I: **Optimality**
@@ -42,6 +43,21 @@ Varieties:
 - [x] Type III: **Bounded-optimality**
 - [x] Type IV: **Ecologically-bounded-optimality**
 
+**Who should use Type I?**
+* if the **"best choice"** matters a lot
+	* investors making a long-term investment
+	* politicians drawing up an important policy
+	* scientists looking for an exact solution to a problem (NOT looking for "how do humans do this")
+* it is typically **NOT used in psychological researches**:
+	* it places people under **challenging conditions**
+	* it assesses the **floor/ceiling of behavior**
+
+**When we use Type II?**
+* when experiments can NOT be considered **"isolated incident"**
+	* tasks that **mimick real life strongly**
+	* tasks that **"trick" people** by **changing statistics/expectations**
+* experiments:
+	* **Wason's task** vs **Griggs & Cox's task**
 ## Reference
 
 * https://en.wikipedia.org/wiki/Homo_economicus
