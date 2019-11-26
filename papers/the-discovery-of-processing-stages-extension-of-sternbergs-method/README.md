@@ -66,7 +66,7 @@ the HSMM-MVPA method identifies four distinct processing stages:
 
 <p float="left">
 	<img src="./pix/eeg-approach-1.png" width="800" />
-	<img src="./pix/eeg-approach-1.png" width="800" />
+	<img src="./pix/eeg-approach-2.png" width="800" />
 	<img src="./pix/erp.png" width="800" />
 </p>
 
