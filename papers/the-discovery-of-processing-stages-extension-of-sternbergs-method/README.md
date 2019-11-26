@@ -21,7 +21,7 @@ the HSMM-MVPA method identifies four distinct processing stages:
 
 **PCA (Principle Component Analysis)**
 * PCA is based on the raw voxel data.
-* the first 20 PCA components are retained, which account for two thirds of the variance in the aw voxel data.
+* the first 20 PCA components are retained, which account for two thirds of the variance in the raw voxel data.
 * the MVPA estimates patterns in this 20 dimensional space.
 * **a brain signature** is a constant activity pattern across **a number of PCA components**, rather than across raw voxel data.
 * **PCA weights** define the brain signature.
