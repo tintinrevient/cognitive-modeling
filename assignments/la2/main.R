@@ -35,7 +35,7 @@ plotB <- function(){
     lanePosition = subFrame$posX
   )
   
-  ntrial <- 500#length(unique(plotFrame$trial))
+  ntrial <- 50#length(unique(plotFrame$trial))
   colors <- rainbow(ntrial)
   
   xrange <- range(0:3000)
@@ -45,7 +45,7 @@ plotB <- function(){
   # mean <- with(plotFrame, aggregate(lanePosition, list(trial), mean))
   # sd <- with(plotFrame , aggregate(lanePosition, list(trial), sd))
   
-  sds <- seq(0.2, 0.05)
+  allRn <- c()
   for(i in 1:ntrial){
     #trialData <- plotFrame[plotFrame$trial == i,]
     #mean <- with(trialData, aggregate(lanePosition, list(trial), mean))
@@ -53,19 +53,21 @@ plotB <- function(){
     
     #rn <- rnorm(60, mean = mean$x, sd = sd$x)
     
-    rn <- rnorm(3000 / 50, mean = 0, sd = 0.18)
+    rn <- rnorm(3000 / 50, mean = 0, sd = 0.06)
     rn <- cumsum(rn)
     lines(seq(1, 3000, 50), rn, type = "l" , lwd=1.5, col=colors[i], lty = 1)
+    for(v in rn)
+      allRn <- c(allRn, v)
   }
   
   title("Simulated deviation by time")
-  rn
+  allRn
 }
 
 plotC <- function(dataReal, dataSim){
-  xrange <- range(-2:2)
-  hist(dataReal, xlim = xrange, breaks = seq(-2, 2, 0.25))
-  hist(dataSim, xlim = xrange, breaks = seq(-2, 2, 0.25))
+  xrange <- range(-4:4)
+  hist(dataReal, xlim = xrange, breaks = seq(-4, 4, 0.25))
+  hist(dataSim, xlim = xrange, breaks = seq(-4, 4, 0.25))
 }
 
 par(mfrow=c(2,2))
