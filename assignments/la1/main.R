@@ -38,7 +38,6 @@ deviationMean <- function(){
     deveation = abs(keyPressDataWithLaneDeviation$lanePosition)
   )
   subFrame <- frame[frame$type == "dualSteerFocus" | frame$type == "dualDialFocus",]
-  summary(subFrame)
   mean <- aggregate(subFrame$deveation, by=list(subFrame$type), FUN=mean)
   sd <- aggregate(subFrame$deveation, by=list(subFrame$type), FUN=sd)
   
@@ -70,15 +69,16 @@ plotDeviation <- function(){
   )
   
   subFrame <- frame[frame$error == 0,]
+  subFrame <- subFrame[subFrame$keypress >= 1 & subFrame$keypress <= 11,]
+  View(subFrame)
   subFrameSF <- subFrame[subFrame$type == "dualSteerFocus",]
   subFrameDF <- subFrame[subFrame$type == "dualDialFocus",]
-  
   
   #per participant per key per per condiciotn
   meanPerKeySF <- aggregate(subFrameSF[3:4], by=list(subFrameSF$keypress), FUN = mean)
   meanPerKeyDF <- aggregate(subFrameDF[3:4], by=list(subFrameDF$keypress), FUN = mean)
   
-  xrange <- range(0:10)
+  xrange <- range(0:6)
   yrange <- range(0:1)
   
   plot(xrange, yrange, type = "n", xlab = "Dailing Time (s)", ylab = "Lateral Deviation (m)")
@@ -93,7 +93,7 @@ plotDeviation <- function(){
   lines(meanPerKeyDF$dialingTime, meanPerKeyDF$deveation, type = "b", lwd=1.5,
         lty=linetype[2], col=colors[2], pch=plotchar[2])
   
-  title("Lateral Deviation by time")
+  title("Lateral Deviation by time per keypress")
   
   legend(xrange[1], yrange[2], c("Steering focus", "Dailing Focus"), cex=0.8, col=colors,
          pch=plotchar, lty=linetype, title="Stuff")

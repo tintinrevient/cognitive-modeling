@@ -35,7 +35,7 @@ plotB <- function(){
     lanePosition = subFrame$posX
   )
   
-  ntrial <- 50000#length(unique(plotFrame$trial))
+  ntrial <- 20#length(unique(plotFrame$trial))
   colors <- rainbow(ntrial)
   
   xrange <- range(0:3000)
@@ -52,7 +52,7 @@ plotB <- function(){
     
     #rn <- rnorm(60, mean = mean$x, sd = sd$x)
     
-    rn <- rnorm(3000 / 50, mean = 0, sd = 0.2)
+    rn <- rnorm(3000 / 50, mean = 0, sd = 0.13)
     rn <- cumsum(rn)
     lines(seq(1, 3000, 50), rn, type = "l" , lwd=1.5, col=colors[i], lty = 1)
   }
@@ -62,8 +62,8 @@ plotB <- function(){
 }
 
 plotC <- function(dataReal, dataSim){
-  hist(dataReal, xlim = range(-4:4))
-  hist(dataSim, xlim = range(-4:4))
+  hist(dataReal)
+  hist(dataSim)
 }
 
 par(mfrow=c(2,2))
@@ -75,3 +75,7 @@ sda <- sd(lda)
 sda
 sdb<- sd(ldb)
 sdb
+
+
+
+
