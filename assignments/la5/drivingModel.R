@@ -43,7 +43,7 @@ startvelocity <- 0 	#a global parameter used to store the lateral velocity of th
 
 ## times for dialing
 #singleTaskKeyPressTimes <- c(400,400,400,400,400,400,400,400,400,400,400)   #digit times needed per keypress at that specific position (note: normalized for chunk retrieval time at digits 1 and 6 --- a retrieval cost would come on top of this)
-singleTaskKeyPressTimes <- rep(250, 11)
+singleTaskKeyPressTimes <- rep(270, 11)
 
 
 digitTypeUK <- c("chunk","oth","oth","oth","oth","chunk","oth","oth","oth","oth","oth")  ### is each digit either the start of a chunk or some other digit?
@@ -269,13 +269,13 @@ runAllSimpleStrategies <- function(nrSimulations,phoneNumber)
 	### and mean trial time
 	agrResultsMeanDrift$TrialTime <-  with(agrResults[agrResults$keypresses ==11,],aggregate(times,list( strats= strats, steers= steers),mean))$x	
 	
+	
 	#### make a plot that visualizes all the strategies: note that trial time is divided by 1000 to get the time in seconds
 	with(agrResultsMeanDrift,plot(TrialTime/1000,abs(dev),pch=21,bg="dark grey",col="dark grey",log="x",xlab="Dial time (s)",ylab="Average Lateral Deviation (m)"))
-	title(paste("Times simulated ", nrSimulations))
 	
 	
 	### give a summary of the data	
-	agrResultsMeanDrift
+	summary(agrResultsMeanDrift$TrialTime)
 
 }
 
@@ -434,25 +434,4 @@ updateSteering <- function(velocity,nrUpdates,startPosLane)
 	
 }
 
-
-testPhoneNr <- 12345678901
-simulationRuns <- seq(0, 100, 25)
-simulationRuns[1] <- 1
-simulationTimes <- data.frame(
-  run = integer(),
-  time = integer()
-)
-
-for(i in simulationRuns){
-  st <- system.time(rs <- runAllSimpleStrategies(i, testPhoneNr))
-  View(rs)
-  mean <- mean(abs(rs$dev))
-  sd <- sd(abs(rs$dev))
-  print(mean)
-  print(sd)
-  View(with(rs, aggregate(dev, list(strats= strats, steers= steers), sd)))
-  simulationTimes <- rbind(simulationTimes, data.frame(run=i, time=st[1]))
-}
-simulationTimes
-plot(simulationTimes, type="b")
-
+runOneTrial(c(),	5,	c(1,6),	11,	"07854325698")
