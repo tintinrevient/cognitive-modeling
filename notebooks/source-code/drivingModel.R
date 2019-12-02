@@ -438,24 +438,24 @@ updateSteering <- function(velocity,nrUpdates,startPosLane)
 }
 
 runOneTrial(c(),	5,	c(1,6),	11,	"07854325698")
-frame <- runOneTrial(c(4,5), 1, c(1,6), 11, "07854325698")
+frame <- runOneTrial(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), 1, c(1,6), 11, "07854325698")
 View(frame)
 
 # install.packages("ggpubr")
-library(ggpubr)
-NrSims <- c(1, 25, 50, 100, 200, 500)
-plots <- list()
-for(i in NrSims) {
-  agrResultsMeanDrift <- runAllSimpleStrategies(i, "07854325698")
-  plots[[i]] <- ggplot(data = agrResultsMeanDrift, mapping = aes(x = TrialTime/1000, y = abs(dev))) + 
-    geom_point(color = "darkgrey") + 
-    labs(x = "Dial time (s)", y = "Average Lateral Deviation (m)", title = paste("Times simulated", i)) +
-    theme_classic()
-}
-
-ggarrange(plots[[1]], plots[[25]], ncol = 2, nrow = 1)
-ggarrange(plots[[50]], plots[[100]], ncol = 2, nrow = 1)
-ggarrange(plots[[200]], plots[[500]], ncol = 2, nrow = 1)
+# library(ggpubr)
+# NrSims <- c(1, 25, 50, 100, 200, 500)
+# plots <- list()
+# for(i in NrSims) {
+#   agrResultsMeanDrift <- runAllSimpleStrategies(i, "07854325698")
+#   plots[[i]] <- ggplot(data = agrResultsMeanDrift, mapping = aes(x = TrialTime/1000, y = abs(dev))) + 
+#     geom_point(color = "darkgrey") + 
+#     labs(x = "Dial time (s)", y = "Average Lateral Deviation (m)", title = paste("Times simulated", i)) +
+#     theme_classic()
+# }
+# 
+# ggarrange(plots[[1]], plots[[25]], ncol = 2, nrow = 1)
+# ggarrange(plots[[50]], plots[[100]], ncol = 2, nrow = 1)
+# ggarrange(plots[[200]], plots[[500]], ncol = 2, nrow = 1)
 
 
 

@@ -1,6 +1,6 @@
 # Source Code
 
-For the function "runAllSimpleStrategies", the key variables are as below:
+For the function **"runAllSimpleStrategies(nrSimulations, phoneNumber)"**, "phoneNumber" is a fixed value, and the key variables are as below:
 
 **strategy**: 
 * There are in total 11 strategies from 1 to 11
@@ -8,7 +8,7 @@ For the function "runAllSimpleStrategies", the key variables are as below:
 	* strategy = 2: dial 2 digits -> steer -> dial 2 digits -> steer -> ...
 	* strategy = 3: dial 3 digits -> steer -> dial 3 digits -> steer -> ...
 	* strategy = 11: dial 11 digits
-* strategy is stored as a vector, where each element represents the interleaving position (in the 11-digit telephone number).
+* strategy is stored as a vector, where each element represents the task-switching position (in the 11-digit telephone number).
 	* strategy = 1: strategy <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
 	* strategy = 2: strategy <- c(2, 4, 6, 8, 10)
 	* strategy = 3: strategy <- c(3, 6, 9)
@@ -26,6 +26,8 @@ For simple strategies, we need to simulate for every combination of **strategy**
 * strategy[1, 10] matches with steer[1, 12]
 * strategy 11 matches with steer 0
 * The total number of combinations = 10 strategies * 12 steers + 1 (strategy = 11, steer = 0) = 121.
+
+For **every combination of strategy and steer**, we can run **a custom number of simulations** by setting **"nrSimulations"**.
 
 the data is as below:
 ```
@@ -153,3 +155,263 @@ the data is as below:
 121     10     12 0.3309768 0.3309768      6450
 ```
 
+For each 1 simulation, we run the function **"runOneTrial(strategy, nrSteeringUpdates, normalPhoneStructure, phoneStringLength, phoneNumber)"**.
+
+The fixed values are as below:
+* normalPhoneStructure = c(1,6) -> For a UK-style telephone number (i.e., 07854-325698), the first chunk starts at digit 1, the second chunk starts at digit 6.
+* phoneStringLength = 11
+* phoneNumber = any 11 digits of number, e.g., phoneNumber = "07854325698"
+
+
+The key variables are as below:
+* strategy = c(3, 6, 9) -> the task switch starts <mark>**before**</mark> dialing the 3rd, 6th, 9th digit.
+* nrSteeringUpdates = any number from the range [0, 12]
+* "events" = ["none", "switch1", "steer", "switch2", "keypress"]
+
+When below parameters are set, the data is as below:
+* strategy = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+* nrSteeringUpdates = 1
+
+```
+    times   events      drifts
+1       0     none 0.270000000
+2      50  switch1 0.264901971
+3     100  switch1 0.257630892
+4     150  switch1 0.251043369
+5     200  switch1 0.243037243
+6     250    steer 0.241940689
+7     300    steer 0.239503194
+8     350    steer 0.240484257
+9     400    steer 0.239039063
+10    450    steer 0.236574173
+11    500  switch2 0.235190112
+12    550  switch2 0.231786430
+13    600  switch2 0.229435385
+14    650  switch2 0.225862111
+15    700     none 0.219191798
+16    750     none 0.208231848
+17    800     none 0.193540753
+18    850     none 0.177160010
+19    900     none 0.163443631
+20    950     none 0.151899670
+21   1000 keypress 0.138144499
+22   1050  switch1 0.124077735
+23   1100  switch1 0.111733620
+24   1150  switch1 0.097335329
+25   1200  switch1 0.080011966
+26   1250    steer 0.090280673
+27   1300    steer 0.093698894
+28   1350    steer 0.092196038
+29   1400    steer 0.094156591
+30   1450    steer 0.098821655
+31   1500  switch2 0.097527051
+32   1550  switch2 0.094165943
+33   1600  switch2 0.090989077
+34   1650  switch2 0.086931250
+35   1700     none 0.086205935
+36   1750     none 0.084145604
+37   1800     none 0.082880788
+38   1850     none 0.085351696
+39   1900     none 0.087271414
+40   1950     none 0.083983381
+41   2000 keypress 0.079536970
+42   2050  switch1 0.075863485
+43   2100  switch1 0.069782726
+44   2150  switch1 0.067141112
+45   2200  switch1 0.065525334
+46   2250    steer 0.066222747
+47   2300    steer 0.065249575
+48   2350    steer 0.061607375
+49   2400    steer 0.063345321
+50   2450    steer 0.063331041
+51   2500  switch2 0.065199756
+52   2550  switch2 0.065960436
+53   2600  switch2 0.069745853
+54   2650  switch2 0.078194289
+55   2700     none 0.093610734
+56   2750     none 0.104487183
+57   2800     none 0.111541507
+58   2850     none 0.112133102
+59   2900     none 0.115491664
+60   2950     none 0.117109377
+61   3000 keypress 0.124465251
+62   3050  switch1 0.133719795
+63   3100  switch1 0.143941272
+64   3150  switch1 0.146992275
+65   3200  switch1 0.148289141
+66   3250    steer 0.143284095
+67   3300    steer 0.144204215
+68   3350    steer 0.145766995
+69   3400    steer 0.144635445
+70   3450    steer 0.141574947
+71   3500  switch2 0.136740085
+72   3550  switch2 0.136359791
+73   3600  switch2 0.135824681
+74   3650  switch2 0.137128936
+75   3700     none 0.138643048
+76   3750     none 0.137668534
+77   3800     none 0.137482196
+78   3850     none 0.139112317
+79   3900     none 0.137756873
+80   3950     none 0.134688354
+81   4000 keypress 0.132205079
+82   4050  switch1 0.128222064
+83   4100  switch1 0.121816058
+84   4150  switch1 0.110747641
+85   4200  switch1 0.099605148
+86   4250    steer 0.106135191
+87   4300    steer 0.109677445
+88   4350    steer 0.114057334
+89   4400    steer 0.112835732
+90   4450    steer 0.112818642
+91   4500  switch2 0.111059021
+92   4550  switch2 0.112881574
+93   4600  switch2 0.117954458
+94   4650  switch2 0.124327627
+95   4700     none 0.124555377
+96   4750     none 0.126128524
+97   4800     none 0.127228504
+98   4850     none 0.128522647
+99   4900     none 0.133154240
+100  4950     none 0.133120664
+101  5000 keypress 0.133739669
+102  5050  switch1 0.135884538
+103  5100  switch1 0.141760757
+104  5150  switch1 0.143742646
+105  5200  switch1 0.148014711
+106  5250    steer 0.152758178
+107  5300    steer 0.158956629
+108  5350    steer 0.163445427
+109  5400    steer 0.169687033
+110  5450    steer 0.173727787
+111  5500  switch2 0.167305858
+112  5550  switch2 0.159832908
+113  5600  switch2 0.152394391
+114  5650  switch2 0.146195044
+115  5700     none 0.140389104
+116  5750     none 0.130784178
+117  5800     none 0.119409225
+118  5850     none 0.112670168
+119  5900     none 0.104672979
+120  5950     none 0.101993900
+121  6000 keypress 0.095558585
+122  6050  switch1 0.088803666
+123  6100  switch1 0.078726207
+124  6150  switch1 0.067961198
+125  6200  switch1 0.056941851
+126  6250    steer 0.060266297
+127  6300    steer 0.062828732
+128  6350    steer 0.061433007
+129  6400    steer 0.059610559
+130  6450    steer 0.057356659
+131  6500  switch2 0.054874132
+132  6550  switch2 0.056712494
+133  6600  switch2 0.058842038
+134  6650  switch2 0.058528134
+135  6700     none 0.060584119
+136  6750     none 0.066494396
+137  6800     none 0.078948940
+138  6850     none 0.090585181
+139  6900     none 0.100530932
+140  6950     none 0.111864955
+141  7000 keypress 0.122602062
+142  7050  switch1 0.132414282
+143  7100  switch1 0.146533145
+144  7150  switch1 0.161612452
+145  7200  switch1 0.179558679
+146  7250    steer 0.180950343
+147  7300    steer 0.178723807
+148  7350    steer 0.174921973
+149  7400    steer 0.172920728
+150  7450    steer 0.170494261
+151  7500  switch2 0.172890140
+152  7550  switch2 0.170872597
+153  7600  switch2 0.163524985
+154  7650  switch2 0.151770374
+155  7700     none 0.138674087
+156  7750     none 0.125351570
+157  7800     none 0.116371909
+158  7850     none 0.104284419
+159  7900     none 0.089868649
+160  7950     none 0.077271824
+161  8000 keypress 0.063911062
+162  8050  switch1 0.044856078
+163  8100  switch1 0.028118821
+164  8150  switch1 0.006333957
+165  8200  switch1 0.017691751
+166  8250    steer 0.019538190
+167  8300    steer 0.014053209
+168  8350    steer 0.020797181
+169  8400    steer 0.020250069
+170  8450    steer 0.021735007
+171  8500  switch2 0.016971388
+172  8550  switch2 0.013022817
+173  8600  switch2 0.009072353
+174  8650  switch2 0.003308379
+175  8700     none 0.001303055
+176  8750     none 0.009069905
+177  8800     none 0.022158084
+178  8850     none 0.032720610
+179  8900     none 0.049983596
+180  8950     none 0.065777773
+181  9000 keypress 0.085003388
+182  9050  switch1 0.068247969
+183  9100  switch1 0.051800517
+184  9150  switch1 0.030730579
+185  9200  switch1 0.009335444
+186  9250    steer 0.012517249
+187  9300    steer 0.012538744
+188  9350    steer 0.010833809
+189  9400    steer 0.007772323
+190  9450    steer 0.006943813
+191  9500  switch2 0.007133118
+192  9550  switch2 0.008126514
+193  9600  switch2 0.006081029
+194  9650  switch2 0.003364885
+195  9700     none 0.001831735
+196  9750     none 0.008376116
+197  9800     none 0.019530266
+198  9850     none 0.026252630
+199  9900     none 0.030340155
+200  9950     none 0.038293824
+201 10000 keypress 0.042595511
+202 10050  switch1 0.046482634
+203 10100  switch1 0.054504604
+204 10150  switch1 0.065220349
+205 10200  switch1 0.079081965
+206 10250    steer 0.078783307
+207 10300    steer 0.080345981
+208 10350    steer 0.081876696
+209 10400    steer 0.083982021
+210 10450    steer 0.087898522
+211 10500  switch2 0.086299427
+212 10550  switch2 0.080006866
+213 10600  switch2 0.075639990
+214 10650  switch2 0.068730788
+215 10700     none 0.065596256
+216 10750     none 0.061428799
+217 10800     none 0.053607844
+218 10850     none 0.045236079
+219 10900     none 0.037959793
+220 10950     none 0.030600760
+221 11000 keypress 0.026839359
+```
+
+The assumptions are as below:
+* startvelocity = 0 
+* startingPositionInLane = 0.27m
+* laneDriftList = calculateLaneDrift(): 
+	* 
+
+* timeStepPerDriftUpdate = 50ms
+
+* dialTimes = c(250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250): baseline time of the keypress interval while focusing on dialing
+* chunkRetrievalTime = 100ms: by adding chunkRetrievalTime, dialTimes = c(350, 250, 250, 250, 250, 350, 250, 250, 250, 250, 250)
+* switchCost = 200ms: switching time between dialing and driving, which will be added to dialTimes per strategy
+
+* times = updateTimestampslist(times, time): generate timestamps, e.g., c(0, 50, 100, 150, ...)
+
+<p float="left">
+	<img src="./humanDataHistogram.png" width="400" />
+	<img src="./simulatedDataPerMillisecondHistogram.png" width="400" />
+</p>

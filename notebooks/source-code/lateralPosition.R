@@ -67,4 +67,53 @@ gaussianDistribution <- function() {
          x = "posX (m)")
 }
 
+gaussianDistributionWithGroupingBy50 <- function() {
+  trials <- 20
+  samples <- 2999
+  mean <- 0
+  # sd <- 0.008
+  sd <- 0.13
+  frame <- tibble()
+  for(i in 1:trials) {
+    simulatedDataByOneMillisecond <- rnorm(samples, mean, sd) %>% 
+      prepend(0.0) %>% 
+      cumsum()
+    
+    # View(simulatedDataByOneMillisecond)
+    
+    simulatedDataByFiftyMilliseconds <- c()
+    
+    seq <- seq(0, 3000, 50)
+    seq[1] <- 1
+    for(j in seq) {
+      simulatedDataByFiftyMilliseconds <- c(simulatedDataByFiftyMilliseconds, simulatedDataByOneMillisecond[j])
+    }
+    
+    # View(simulatedDataByFiftyMilliseconds)
+    
+    subFrame <- tibble(trial = i, trialTime = seq(0, 3000, 50), posX = simulatedDataByFiftyMilliseconds)
+    frame <- rbind(frame, subFrame)
+  }
+  
+  frame <- frame %>% 
+    mutate(trial = factor(trial))
+  
+  View(frame)
+  print(sd(frame$posX))
+  
+  # line
+  ggplot(data = frame, mapping = aes(x = trialTime, y = posX)) + 
+    geom_line(mapping = aes(color = trial)) +
+    labs(title = "Simulated Data (based on original model)", 
+         x = "Trial time (ms)", y = "Lateral Position (m)")
+  
+  # histogram
+  ggplot(data = frame, mapping = aes(x = posX)) + 
+    geom_histogram(fill = "white", color = "black", binwidth = 0.2) +
+    coord_cartesian(xlim = c(-4, 4)) +
+    labs(title = "Simulated Data (based on original model)", 
+         x = "posX (m)")
+}
+
+
 
