@@ -7,15 +7,9 @@
 ## for questions, please contact Christian P. Janssen: c.p.janssen@uu.nl
 ## www.cpjanssen.nl
 
-
 require(gtools)
 
-
-
-
 ##global parameters
-
-
 ### parameters related to steering
 steeringTimeOptions <- c(1,2,3,4,5,6,7,8,9,10,11,12)    #list op options for how many steering corrections can be made each time that attention is paid to steering (of steeringUpdateTime sec each) (this influences the strategy alternatives)
 steeringUpdateTime <- 250    #in milliseconds
@@ -24,7 +18,8 @@ startingPositionInLane <- 0.27 			#assume that car starts already away from lane
 
 #parameters for deviations in car drift due the simulator environment: See Janssen & Brumby (2010) page 1555
 gaussDeviateMean <- 0
-gaussDeviateSD <- 0.13
+# gaussDeviateSD <- 0.13
+gaussDeviateSD <- 0.35
 
 #When the car is actively contorlled, we calculate a value using equation (1) in Janssen & Brumby (2010). However, some noise is added on top of this equation to account for variation in human behavior. See Janssen & Brumby (2010) page 1555. Also see function "updateSteering" on how this function is used
 gaussDriveNoiseMean <- 0
@@ -43,8 +38,8 @@ startvelocity <- 0 	#a global parameter used to store the lateral velocity of th
 
 ## times for dialing
 #singleTaskKeyPressTimes <- c(400,400,400,400,400,400,400,400,400,400,400)   #digit times needed per keypress at that specific position (note: normalized for chunk retrieval time at digits 1 and 6 --- a retrieval cost would come on top of this)
-singleTaskKeyPressTimes <- rep(270, 11)
-
+# singleTaskKeyPressTimes <- rep(270, 11)
+singleTaskKeyPressTimes <- rep(250, 11)
 
 digitTypeUK <- c("chunk","oth","oth","oth","oth","chunk","oth","oth","oth","oth","oth")  ### is each digit either the start of a chunk or some other digit?
 

@@ -2,12 +2,13 @@ library(tidyverse)
 
 lateralPositionOverTrialTime <- function() {
   frame <- read.csv("tableOfDriftValuesCalibration.csv", header = TRUE)
-  frame %>% 
+  frame <- frame %>% 
     filter(trialTime >= 15000, trialTime <= 18000) %>% 
     mutate(trialTime = trialTime / 1000,
            trial = factor(trial)) %>% 
-    group_by(trial) %>% 
-    ggplot(mapping = aes(x = trialTime, y = posX)) + 
+    group_by(trial)
+  
+  ggplot(data = frame, mapping = aes(x = trialTime, y = posX)) + 
     geom_line(mapping = aes(color = trial)) +
     geom_point(mapping = aes(color = trial, shape = trial)) + 
     scale_shape_manual(values = 1:20) + 
@@ -17,16 +18,19 @@ lateralPositionOverTrialTime <- function() {
 
 lateralPositionOverTrialTimeHistogram <- function() {
   frame <- read.csv("tableOfDriftValuesCalibration.csv", header = TRUE)
-  frame %>% 
+  frame <- frame %>% 
     filter(trialTime >= 15000, trialTime <= 18000) %>% 
     mutate(trialTime = trialTime / 1000,
            trial = factor(trial)) %>% 
-    group_by(trial) %>% 
-    ggplot(mapping = aes(x = posX)) + 
+    group_by(trial)
+  
+  ggplot(data = frame, mapping = aes(x = posX)) + 
     geom_histogram(fill = "white", color = "black", binwidth = 0.2) +
     coord_cartesian(xlim = c(-4, 4)) +
     labs(title = "Human Data (based on experiment)", 
          x = "posX (m)")
+  
+  print(sd(frame$posX))
 }
 
 gaussianDistribution <- function() {
@@ -47,6 +51,7 @@ gaussianDistribution <- function() {
     mutate(trial = factor(trial))
   
   View(frame)
+  print(sd(frame$posX))
   
   # line
   ggplot(data = frame, mapping = aes(x = trialTime, y = posX)) + 
