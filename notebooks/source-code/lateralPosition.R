@@ -37,7 +37,7 @@ gaussianDistribution <- function() {
   trials <- 20
   samples <- 3000 / 50
   mean <- 0
-  sd <- 0.13
+  sd <- 0.06
   frame <- tibble()
   for(i in 1:trials) {
     simulatedData <- rnorm(samples, mean, sd) %>% 

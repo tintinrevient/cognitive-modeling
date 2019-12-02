@@ -19,11 +19,12 @@ startingPositionInLane <- 0.27 			#assume that car starts already away from lane
 #parameters for deviations in car drift due the simulator environment: See Janssen & Brumby (2010) page 1555
 gaussDeviateMean <- 0
 # gaussDeviateSD <- 0.13
-gaussDeviateSD <- 0.35
+gaussDeviateSD <- 0.06
 
 #When the car is actively contorlled, we calculate a value using equation (1) in Janssen & Brumby (2010). However, some noise is added on top of this equation to account for variation in human behavior. See Janssen & Brumby (2010) page 1555. Also see function "updateSteering" on how this function is used
 gaussDriveNoiseMean <- 0
-gaussDriveNoiseSD <- 0.1	#in meter/sec
+# gaussDriveNoiseSD <- 0.1	#in meter/sec
+gaussDriveNoiseSD <- 0.03
 
 timeStepPerDriftUpdate <- 50 ### msec: what is the time interval between two updates of lateral position?
 
@@ -100,7 +101,7 @@ runOneTrial <- function(strategy,nrSteeringUpdates,normalPhoneStructure,phoneStr
 		### determine dial time, so additional costs can be added later
 		locDialTime <- dialTimes[digitindex]
 			
-			
+		# digitindex in strategy
 		if (length(which(strategy== digitindex)))  ### if this is a position where you switch, then switch
 		{
 			## experience switch cost
@@ -161,7 +162,7 @@ runOneTrial <- function(strategy,nrSteeringUpdates,normalPhoneStructure,phoneStr
 	#with(table[table$events == "keypress",],plot(times,drifts,ylim=c(-2,2)))
 
 	table ### return the table
-
+  
 }
 
 
@@ -215,7 +216,7 @@ runAllSimpleStrategies <- function(nrSimulations,phoneNumber)
 
 
 
-		### now run a trial (runOneTrial) for all combinations of how frequently you update the steering when you are steering (locSteerTimeOptions) and for the nuber of simulations that you want to run for each strategy (nrSimulations)
+		### now run a trial (runOneTrial) for all combinations of how frequently you update the steering when you are steering (locSteerTimeOptions) and for the number of simulations that you want to run for each strategy (nrSimulations)
 		for (steerTimes in locSteerTimeOptions)
 		{
 			for (i in 1:nrSimulations)
@@ -243,6 +244,8 @@ runAllSimpleStrategies <- function(nrSimulations,phoneNumber)
 	### now make a new table based on all the data that was collected
 	tableAllSamples <- data.frame(keypresses,times,deviations,strats,steers)
 	
+	View(tableAllSamples)
+	
 	
 	#### In the table we collected data for multiple simulations per strategy. Now we want to know the average performane of each strategy.
 	#### These aspects are calculated using the "aggregate" function
@@ -250,6 +253,9 @@ runAllSimpleStrategies <- function(nrSimulations,phoneNumber)
 	
 	## calculate average deviation at each keypress (keypresses), for each unique strategy variation (strats and steers)
 	agrResults <- with(tableAllSamples,aggregate(deviations,list(keypresses=keypresses, strats= strats, steers= steers),mean))
+	
+	View(agrResults)
+	
 	agrResults$dev <- agrResults$x
 	
 	
@@ -266,11 +272,13 @@ runAllSimpleStrategies <- function(nrSimulations,phoneNumber)
 	
 	
 	#### make a plot that visualizes all the strategies: note that trial time is divided by 1000 to get the time in seconds
-	with(agrResultsMeanDrift,plot(TrialTime/1000,abs(dev),pch=21,bg="dark grey",col="dark grey",log="x",xlab="Dial time (s)",ylab="Average Lateral Deviation (m)"))
+	# with(agrResultsMeanDrift,plot(TrialTime/1000,abs(dev),pch=21,bg="dark grey",col="dark grey",log="x",xlab="Dial time (s)",ylab="Average Lateral Deviation (m)", title=paste("Times simulated", i)))
 	
 	
 	### give a summary of the data	
-	summary(agrResultsMeanDrift$TrialTime)
+	# summary(agrResultsMeanDrift$TrialTime)
+	
+	agrResultsMeanDrift
 
 }
 
@@ -430,3 +438,26 @@ updateSteering <- function(velocity,nrUpdates,startPosLane)
 }
 
 runOneTrial(c(),	5,	c(1,6),	11,	"07854325698")
+frame <- runOneTrial(c(4,5), 1, c(1,6), 11, "07854325698")
+View(frame)
+
+# install.packages("ggpubr")
+library(ggpubr)
+NrSims <- c(1, 25, 50, 100, 200, 500)
+plots <- list()
+for(i in NrSims) {
+  agrResultsMeanDrift <- runAllSimpleStrategies(i, "07854325698")
+  plots[[i]] <- ggplot(data = agrResultsMeanDrift, mapping = aes(x = TrialTime/1000, y = abs(dev))) + 
+    geom_point(color = "darkgrey") + 
+    labs(x = "Dial time (s)", y = "Average Lateral Deviation (m)", title = paste("Times simulated", i)) +
+    theme_classic()
+}
+
+ggarrange(plots[[1]], plots[[25]], ncol = 2, nrow = 1)
+ggarrange(plots[[50]], plots[[100]], ncol = 2, nrow = 1)
+ggarrange(plots[[200]], plots[[500]], ncol = 2, nrow = 1)
+
+
+
+
+
