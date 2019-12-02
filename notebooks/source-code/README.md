@@ -1,5 +1,7 @@
 # Source Code
 
+## Code Walkthrough
+
 For the function **"runAllSimpleStrategies(nrSimulations, phoneNumber)"**, "phoneNumber" is a fixed value, and the key variables are as below:
 
 **strategy**: 
@@ -166,7 +168,7 @@ The fixed values are as below:
 The key variables are as below:
 * strategy = c(3, 6, 9) -> the task switch starts <mark>**before**</mark> dialing the 3rd, 6th, 9th digit.
 * nrSteeringUpdates = any number from the range [0, 12]
-* "events" = ["none", "switch1", "steer", "switch2", "keypress"]
+* **events** = ["none", "switch1", "steer", "switch2", "keypress"], and before every "keypress" event, the order of events is: switch1 -> steer -> switch2 -> keypress.
 
 When below parameters are set, the data is as below:
 * strategy = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
@@ -406,7 +408,11 @@ The assumptions are as below:
 * gaussDeviateMean = 0
 * gaussDeviateSD = 0.06
 
-**laneDriftList = calculateLaneDrift()**, and its formula as below:
+drifts are from below two set of events:
+* switch1, switch2, keypress -> calculateLaneDrift()
+* steer -> updateSteering()
+
+**laneDriftList = calculateLaneDrift(lastDrift, newVelocity, switchCost or locDialTime)**, and its formula as below:
 * locVelocity <- locVelocity + rnorm(1, 0, 0.06)
 * lastLaneDrift <- lastLaneDrift + locVelocity * timeStepPerDriftUpdate / 1000
 * laneDriftList <- c(laneDriftList, abs(lastLaneDrift)) 
@@ -414,6 +420,11 @@ The assumptions are as below:
 The important assumption above is:
 * **rnorm(1, 0, 0.06) generates the lateral position for 1 millisecond.**
 * lane drift (that is, posX = exact position) over 50 milliseconds (or 50/1000 seconds) is updated by adding rnorm(1, 0, 0.06) * 50 / 1000.
+
+**laneDriftList = updateSteering(newVelocity, nrSteeringUpdates, lastDrift)**
+* steer = 1 -> nrSteeringUpdates = 5
+* steer = 2 -> nrSteeringUpdates = 10
+
 
 **times**:
 * dialTimes = c(250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250): baseline time of the keypress interval while focusing on dialing
@@ -423,4 +434,15 @@ The important assumption above is:
 
 **times = updateTimestampslist(times, time)**: 
 * it generate timestamps, e.g., c(0, 50, 100, 150, ...)
+
+## Example
+
+The patterns are as below:
+* times = 0, events = none
+* before every keypress: 4 "switch1" events -> 5 * x "steer" events -> 4 "switch2" events -> 6 "none" events -> 1 "keypress" event
+	* switchCost = 200ms = 50ms * 4: 4 "switch1" or "switch2" events
+	* x = steer = [0, 12]
+	* keypress with chunkRetrievalTime = 350ms = 50ms * 7: 6 "none" events -> 1 "keypress" event
+	* keypress with stateInformationRetrievalTime = 350ms = 50ms * 7: 6 "none" events -> 1 "keypress" event
+	* keypress without switching = 250ms = 50ms * 5: 4 "none" events -> 1 "keypress" event
 

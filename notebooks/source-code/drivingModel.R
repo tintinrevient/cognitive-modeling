@@ -438,7 +438,7 @@ updateSteering <- function(velocity,nrUpdates,startPosLane)
 }
 
 runOneTrial(c(),	5,	c(1,6),	11,	"07854325698")
-frame <- runOneTrial(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), 1, c(1,6), 11, "07854325698")
+frame <- runOneTrial(c(1, 4, 8), 1, c(1,6), 11, "07854325698")
 View(frame)
 
 # install.packages("ggpubr")
