@@ -71,8 +71,8 @@ gaussianDistributionWithGroupingBy50 <- function() {
   trials <- 20
   samples <- 2999
   mean <- 0
-  # sd <- 0.008
-  sd <- 0.13
+  sd <- 0.008
+  # sd <- 0.13
   frame <- tibble()
   for(i in 1:trials) {
     simulatedDataByOneMillisecond <- rnorm(samples, mean, sd) %>% 

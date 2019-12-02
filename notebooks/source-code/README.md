@@ -398,20 +398,29 @@ When below parameters are set, the data is as below:
 ```
 
 The assumptions are as below:
+
+**drifts**:
 * startvelocity = 0 
 * startingPositionInLane = 0.27m
-* laneDriftList = calculateLaneDrift(): 
-	* 
-
 * timeStepPerDriftUpdate = 50ms
+* gaussDeviateMean = 0
+* gaussDeviateSD = 0.06
 
+**laneDriftList = calculateLaneDrift()**, and its formula as below:
+* locVelocity <- locVelocity + rnorm(1, 0, 0.06)
+* lastLaneDrift <- lastLaneDrift + locVelocity * timeStepPerDriftUpdate / 1000
+* laneDriftList <- c(laneDriftList, abs(lastLaneDrift)) 
+
+The important assumption above is:
+* <mark>rnorm(1, 0, 0.06) generates the lateral position for 1 millisecond </mark>
+* lane drift (that is, posX = exact position) over 50 milliseconds (or 50/1000 seconds) is updated by adding rnorm(1, 0, 0.06) * 50 / 1000.
+
+**times**:
 * dialTimes = c(250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250): baseline time of the keypress interval while focusing on dialing
 * chunkRetrievalTime = 100ms: by adding chunkRetrievalTime, dialTimes = c(350, 250, 250, 250, 250, 350, 250, 250, 250, 250, 250)
+* stateInformationRetrievalTime = 100ms: by adding stateInformationRetrievalTime, if you are NOT switching at a chunk boundary
 * switchCost = 200ms: switching time between dialing and driving, which will be added to dialTimes per strategy
 
-* times = updateTimestampslist(times, time): generate timestamps, e.g., c(0, 50, 100, 150, ...)
+**times = updateTimestampslist(times, time)**: 
+* it generate timestamps, e.g., c(0, 50, 100, 150, ...)
 
-<p float="left">
-	<img src="./humanDataHistogram.png" width="400" />
-	<img src="./simulatedDataPerMillisecondHistogram.png" width="400" />
-</p>
