@@ -244,7 +244,7 @@ runAllSimpleStrategies <- function(nrSimulations,phoneNumber)
 	### now make a new table based on all the data that was collected
 	tableAllSamples <- data.frame(keypresses,times,deviations,strats,steers)
 	
-	View(tableAllSamples)
+	# View(tableAllSamples)
 	
 	
 	#### In the table we collected data for multiple simulations per strategy. Now we want to know the average performane of each strategy.
@@ -254,7 +254,7 @@ runAllSimpleStrategies <- function(nrSimulations,phoneNumber)
 	## calculate average deviation at each keypress (keypresses), for each unique strategy variation (strats and steers)
 	agrResults <- with(tableAllSamples,aggregate(deviations,list(keypresses=keypresses, strats= strats, steers= steers),mean))
 	
-	View(agrResults)
+	# View(agrResults)
 	
 	agrResults$dev <- agrResults$x
 	
@@ -281,13 +281,6 @@ runAllSimpleStrategies <- function(nrSimulations,phoneNumber)
 	agrResultsMeanDrift
 
 }
-
-
-
-
-
-
-
 
 
 	
@@ -437,10 +430,12 @@ updateSteering <- function(velocity,nrUpdates,startPosLane)
 	
 }
 
-runOneTrial(c(),	5,	c(1,6),	11,	"07854325698")
-frame <- runOneTrial(c(1, 4, 8), 1, c(1,6), 11, "07854325698")
-View(frame)
+# One Trial
+# runOneTrial(c(),	5,	c(1,6),	11,	"07854325698")
+# frame <- runOneTrial(c(1, 4, 8), 1, c(1,6), 11, "07854325698")
+# View(frame)
 
+# At least 1 simulation for all combinations of strategy and steer, which is 121
 # install.packages("ggpubr")
 # library(ggpubr)
 # NrSims <- c(1, 25, 50, 100, 200, 500)
@@ -456,6 +451,22 @@ View(frame)
 # ggarrange(plots[[1]], plots[[25]], ncol = 2, nrow = 1)
 # ggarrange(plots[[50]], plots[[100]], ncol = 2, nrow = 1)
 # ggarrange(plots[[200]], plots[[500]], ncol = 2, nrow = 1)
+
+agrResultsMeanDrift <- runAllSimpleStrategies(1, "07854325698")
+agrResultsMeanDrift <- agrResultsMeanDrift %>% 
+  mutate(strats = factor(strats),
+         steers = factor(steers))
+ggplot(data = agrResultsMeanDrift, mapping = aes(x = TrialTime/1000, y = abs(dev))) +
+  geom_point(mapping = aes(color = strats))
+
+summary(agrResultsMeanDrift)
+print(paste("SD of Deviation: ", sd(agrResultsMeanDrift$dev)))
+print(paste("Mean of Deviation: ", mean(agrResultsMeanDrift$dev)))
+print(paste("SD of Trial Time: ", sd(agrResultsMeanDrift$TrialTime)))
+print(paste("Mean of Trial Time: ", mean(agrResultsMeanDrift$TrialTime)))
+
+
+
 
 
 
