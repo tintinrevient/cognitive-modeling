@@ -412,7 +412,7 @@ The assumptions are as below:
 * laneDriftList <- c(laneDriftList, abs(lastLaneDrift)) 
 
 The important assumption above is:
-* <mark>rnorm(1, 0, 0.06) generates the lateral position for 1 millisecond </mark>
+* <span style="background-color: #FFFF00">rnorm(1, 0, 0.06) generates the lateral position for 1 millisecond </span>
 * lane drift (that is, posX = exact position) over 50 milliseconds (or 50/1000 seconds) is updated by adding rnorm(1, 0, 0.06) * 50 / 1000.
 
 **times**:
