@@ -423,10 +423,11 @@ for(i in NrSims) {
   
   fulldata <- fulldata1
   fulldata$times <- fulldata2$times
+  fulldata <- fulldata %>% mutate(se = sd/sqrt(11))
   
   plots[[i]] <- ggplot(data = fulldata, mapping = aes(x = times/1000, y = dev)) + 
     geom_point(mapping = aes(color = strats)) + 
-    geom_errorbar(mapping = aes(ymin = dev-sd, ymax = dev+sd), width = .1) +
+    geom_errorbar(mapping = aes(ymin = dev-se, ymax = dev+se), width = .1) +
     labs(x = "Dial time (s)", y = "Average Lateral Deviation (m)", title = paste("Times simulated", i))
   # theme_classic()
 }
