@@ -9,6 +9,8 @@
 
 
 require(gtools)
+library(tidyverse)
+load("keyPressDataWithLaneDeviation.Rdata")
 
 
 
@@ -281,7 +283,7 @@ runAllSimpleStrategies <- function(nrSimulations,phoneNumber)
 runAllComplexStrategies <- function(nrSimulations,phoneNumber)
 {
   
-  phoneNrSeq <- seq(1, nchar(phoneNumber), 1)
+  phoneNrSeq <- seq(1, nchar(phoneNumber) - 1, 1)
   stratCombi <- list()
   stratCombi <- c(stratCombi, 0)
   for(i in 1:length(phoneNrSeq)){
@@ -343,8 +345,6 @@ runAllComplexStrategies <- function(nrSimulations,phoneNumber)
   
   ### now make a new table based on all the data that was collected
   tableAllSamples <- data.frame(keypresses,times,deviations,strats,steers)
-  View(tableAllSamples)
-  
   
   #### In the table we collected data for multiple simulations per strategy. Now we want to know the average performane of each strategy.
   #### These aspects are calculated using the "aggregate" function
@@ -364,18 +364,20 @@ runAllComplexStrategies <- function(nrSimulations,phoneNumber)
   agrResultsMeanDrift$dev <- agrResultsMeanDrift$x
   
   ### and mean trial time
-  agrResultsMeanDrift$TrialTime <-  with(agrResults[agrResults$keypresses ==11,],aggregate(times,list( strats= strats, steers= steers),mean))$x	
+  agrResultsMeanDrift$TrialTime <-  with(agrResults[agrResults$keypresses ==11,],aggregate(times,list( strats= strats, steers= steers),mean))$x
   
-  View(agrResultsMeanDrift)
-  
+  agrResultsMeanDriftForPlot <- agrResultsMeanDrift
+  agrResultsMeanDriftForPlot$TrialTime <- agrResultsMeanDriftForPlot$TrialTime / 1000
+  agrResultsMeanDriftForPlot$dev <- abs(agrResultsMeanDriftForPlot$dev)
+  # ss <- subset(agrResultsMeanDriftForPlot, strats == "5")
   
   #### make a plot that visualizes all the strategies: note that trial time is divided by 1000 to get the time in seconds
-  with(agrResultsMeanDrift,plot(TrialTime/1000,abs(dev),pch=21,bg="dark grey",col="dark grey",log="x",xlab="Dial time (s)",ylab="Average Lateral Deviation (m)"))
+  #with(agrResultsMeanDrift,plot(TrialTime/1000,abs(dev),pch=21,bg="dark grey",col="dark grey",log="x",xlab="Dial time (s)",ylab="Average Lateral Deviation (m)"))
+  # 
+  # ### give a summary of the data	
+  # summary(agrResultsMeanDrift$TrialTime)
   
-  
-  ### give a summary of the data	
-  summary(agrResultsMeanDrift$TrialTime)
-  
+  agrResultsMeanDriftForPlot
 }
 
 
@@ -533,5 +535,29 @@ updateSteering <- function(velocity,nrUpdates,startPosLane)
 	
 }
 
+humanData <- keyPressDataWithLaneDeviation %>% 
+  
+  filter(phoneNrLengthAfterKeyPress %in% c(1: 11), 
+         typingErrorMadeOnTrial == 0,
+         partOfExperiment == "dualSteerFocus" | partOfExperiment == "dualDialFocus") %>% 
+  
+  mutate(lanePosition = abs(lanePosition), 
+         Type = ifelse(partOfExperiment == "dualSteerFocus", "Steering-focus", "Dialing-focus")) %>% 
+  
+  group_by(phoneNrLengthAfterKeyPress, Type) %>% 
+  
+  summarise(laneDeviation = mean(lanePosition, na.rm = TRUE),
+            dialingTime = mean(timeRelativeToTrialStart, na.rm = TRUE) / 1000,
+            se = sd(lanePosition, na.rm = TRUE) / sqrt(11))
 
-runAllComplexStrategies(5, 12345678909)
+
+plotframe <- runAllComplexStrategies(50, 12345678909)
+ss <- subset(plotframe, strats == "5")
+
+ggplot(data = plotframe, mapping = aes(x = TrialTime, y = dev)) + 
+  geom_point(color = "grey") + 
+  geom_point(data = ss, mapping = aes(x = TrialTime, y = dev), color="blue", shape=3) +
+  labs(title="Title", x="Dial time (s)", y="Average Lateral Deviation (m)")
+
+
+
