@@ -441,3 +441,26 @@ View(frame)
 
 runAllSimpleStrategies(2, "07854325698")
 
+
+# SD decreases when the number of samples increases
+# samples = 5, SD of deviation = 0.360 <=> samples = 50, SD of deviation =  0.356
+tableAllSamples <- runAllSimpleStrategies(1, "07854325698")
+# View(tableAllSamples)
+data <- tableAllSamples %>% filter(keypresses == 11)
+# stat.desc(data)
+sapply(data[c(2, 3)], function(x)(c(mean = mean(x), sd = sd(x))))
+# with(data, t.test(deviations, times, paired = TRUE))
+
+library(dplyr)
+
+# Correlation between strats and deviation
+# samples = 5, cor = 0.21 <=> samples = 50, cor = 0.438
+data <- tableAllSamples %>% filter(keypresses == 11) %>% group_by(steers, strats) %>% summarise(mean = mean(deviations))
+time <- tableAllSamples %>% filter(keypresses == 11) %>% group_by(steers, strats) %>% summarise(mean = mean(times))
+cor(data$strats, data$mean)
+cor(time$strats, time$mean)
+corr.test(data, use = "complete")
+# samples = 10, p-value = 0.02 <=> samples = 50, p-value = 0.0001
+kruskal.test(mean ~ strats, data = data)
+
+

@@ -38,19 +38,20 @@ deviationMean <- function(){
     deveation = abs(keyPressDataWithLaneDeviation$lanePosition)
   )
   subFrame <- frame[frame$type == "dualSteerFocus" | frame$type == "dualDialFocus",]
+  
   mean <- aggregate(subFrame$deveation, by=list(subFrame$type), FUN=mean)
   sd <- aggregate(subFrame$deveation, by=list(subFrame$type), FUN=sd)
   
-  amountOfSteerFocus <- length(subFrame[subFrame$type == "dualSteerFocus", ])
-  amountOfDialFocus <- length(subFrame[subFrame$type == "dualDialFocus", ])
+  amountOfSteerFocus <- nrow(subFrame[subFrame$type == "dualSteerFocus", ])
+  amountOfDialFocus <- nrow(subFrame[subFrame$type == "dualDialFocus", ])
   
   print(amountOfDialFocus) #5
   print(amountOfSteerFocus)
   
-  se <- sd$x / sqrt(amountOfDialFocus)
+  se <- sd$x / sqrt(12)
   
   endFrame <- data.frame(
-    Type = unique(subFrame$type),
+    #Type = subFrame$type,
     Mean = mean$x,
     SD = sd$x,
     SE = se
@@ -99,7 +100,35 @@ plotDeviation <- function(){
          pch=plotchar, lty=linetype, title="Stuff")
 }
 
+plot <- function() {
+  
+  frame <- read.csv('keyPressDataWithLaneDeviation.csv', header = TRUE)
+  
+  frame <- frame %>%  filter(phoneNrLengthAfterKeyPress %in% c(1: 11), 
+                             typingErrorMadeOnTrial == 0,
+                             partOfExperiment == "dualSteerFocus" | partOfExperiment == "dualDialFocus") %>% 
+    mutate(lanePosition = abs(lanePosition),
+           Type = ifelse(partOfExperiment == "dualSteerFocus", "Steering-focus", "Dialing-focus")) %>% 
+    group_by(phoneNrLengthAfterKeyPress, Type) %>% 
+    summarise(laneDeviation = mean(lanePosition, na.rm = TRUE),
+              dialingTime = mean(timeRelativeToTrialStart, na.rm = TRUE) / 1000,
+              se = sd(lanePosition, na.rm = TRUE) / sqrt(12))
+  
+  ggplot(frame, mapping = aes(x = dialingTime, y = laneDeviation)) +
+    geom_point(mapping = aes(color = Type)) +
+    geom_line(mapping = aes(color = Type)) + 
+    geom_errorbar(mapping = aes(ymin = laneDeviation-se, ymax = laneDeviation+se, color = Type), width = .1) +
+    coord_cartesian(ylim = c(0, 1), xlim = c(0,  6)) +
+    labs(title = "Lateral deviation by time per keypress", x = "Dialing Time (s)", y = "Lateral Deviation (m)")
+}
+
 print(timeMeans())
 print(deviationMean())
 plotDeviation()
+
+options(scipen = 999)
+wilcox.test(timeRelativeToTrialStart~partOfExperiment, data = frame)
+wilcox.test(lanePosition~partOfExperiment, data = frame)
+
+
 

@@ -53,7 +53,7 @@ plotB <- function(){
     
     #rn <- rnorm(60, mean = mean$x, sd = sd$x)
     
-    rn <- rnorm(3000 / 50, mean = 0, sd = 0.06)
+    rn <- rnorm(3000 / 50, mean = 0, sd = 0.1)
     rn <- cumsum(rn)
     lines(seq(1, 3000, 50), rn, type = "l" , lwd=1.5, col=colors[i], lty = 1)
     for(v in rn)

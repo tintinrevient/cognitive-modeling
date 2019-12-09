@@ -37,7 +37,7 @@ gaussianDistribution <- function() {
   trials <- 20
   samples <- 3000 / 50
   mean <- 0
-  sd <- 0.06
+  sd <- 0.08
   frame <- tibble()
   for(i in 1:trials) {
     simulatedData <- rnorm(samples, mean, sd) %>% 
@@ -49,8 +49,7 @@ gaussianDistribution <- function() {
   
   frame <- frame %>% 
     mutate(trial = factor(trial))
-  
-  View(frame)
+
   print(sd(frame$posX))
   
   # line
@@ -115,5 +114,7 @@ gaussianDistributionWithGroupingBy50 <- function() {
          x = "posX (m)")
 }
 
+
+gaussianDistribution()
 
 

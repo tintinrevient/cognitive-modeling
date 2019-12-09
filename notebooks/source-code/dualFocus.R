@@ -1,12 +1,13 @@
 library(tidyverse)
-
+load("keyPressDataWithLaneDeviation.Rdata")
 # A
 totalDialingTime <- function() {
-  frame <- read.csv('keyPressDataWithLaneDeviation.csv', header = TRUE)
+  
+  frame <- keyPressDataWithLaneDeviation #read.csv('keyPressDataWithLaneDeviation.csv', header = TRUE)
   pp <- length(unique(frame$pp))
 
   frame <- frame %>% 
-    filter(phoneNrLengthAfterKeyPress == 12, 
+    filter(phoneNrLengthAfterKeyPress == 11, 
            typingErrorMadeOnTrial == 0, 
            partOfExperiment == "dualSteerFocus" | partOfExperiment == "dualDialFocus") %>% 
     group_by(partOfExperiment) %>% 
@@ -25,25 +26,68 @@ absoluteLaneDeviationByEachKeypress <- function() {
   frame <- frame %>% 
     filter(typingErrorMadeOnTrial == 0, 
            partOfExperiment == "dualSteerFocus" | partOfExperiment == "dualDialFocus") %>% 
-    select(partOfExperiment, pp, trial, phoneNrLengthAfterKeyPress, lanePosition) %>% 
-    mutate(diff = 0)
+    select(partOfExperiment, pp, trial, phoneNrLengthAfterKeyPress, lanePosition)
+  
+
+  # ppn <- frame[i]$pp
+  # tn <- frame[i]$trial
+  # plp <- frame[i]$lanePostion
+  ppn <- -1
+  tn <- -1
+  diff <- c()
+  
+  dataFrameFrame <- data.frame(frame)
+  
+  for(i in 1:nrow(frame)){
     
-  matrixFrame <- as.matrix(sapply(frame, as.numeric))
-  batch <- nrow(frame) / 13
-  for(i in 1:batch) {
-    for(j in 1:13) {
-      rowNo <- (i-1)*13 + j
-      if(j == 1){
-        matrixFrame[rowNo, 6] = 0
-      } else {
-        matrixFrame[rowNo, 6] = abs(matrixFrame[rowNo, 5] - matrixFrame[rowNo-1, 5])
-      }
+    newPp <- frame[i,]$pp
+    newTn <- frame[i,]$trial
+    
+    if(ppn != newPp || tn != newTn){
+      ppn <- newPp
+      tn <- newTn
+      ss <- subset(frame, pp == newPp & trial == newTn)
+      diffDev <- diff(abs(ss$lanePosition))
+      diffDev <- prepend(diffDev, 0.0)
+      diff <- c(diff, abs(diffDev))
     }
+    
   }
   
-  dataFrame <- as_tibble(matrixFrame) %>% 
-    mutate(partOfExperiment = ifelse(partOfExperiment == 1, "dualDialFocus", "dualSteerFocus")) %>% 
-    filter(phoneNrLengthAfterKeyPress >= 1)
+  View(diff)
+  
+  dataFrameFrame$diff <- diff
+  View(dataFrameFrame)
+  
+  dataFrameFrameFrame <- dataFrameFrame %>% 
+    group_by(partOfExperiment, pp, trial) %>% 
+    summarise(totalDiffByTrial = sum(diff)) %>% 
+    group_by(partOfExperiment) %>%
+    summarise(mean = mean(totalDiffByTrial),
+              sd = sd(totalDiffByTrial),
+              se = sd / sqrt(12))
+  
+  
+  View(dataFrameFrameFrame)
+  
+  #   mutate(diff = 0)
+  #   
+  # matrixFrame <- as.matrix(sapply(frame, as.numeric))
+  # batch <- nrow(frame) / 13
+  # for(i in 1:batch) {
+  #   for(j in 1:13) {
+  #     rowNo <- (i-1)*13 + j
+  #     if(j == 1){
+  #       matrixFrame[rowNo, 6] = 0
+  #     } else {
+  #       matrixFrame[rowNo, 6] = abs(matrixFrame[rowNo, 5] - matrixFrame[rowNo-1, 5])
+  #     }
+  #   }
+  # }
+  # 
+  # dataFrame <- as_tibble(matrixFrame) %>% 
+  #   mutate(partOfExperiment = ifelse(partOfExperiment == 1, "dualDialFocus", "dualSteerFocus")) %>% 
+  #   filter(phoneNrLengthAfterKeyPress >= 1)
   
   View(dataFrame)
   
@@ -58,15 +102,19 @@ absoluteLaneDeviationByEachKeypress <- function() {
 
 # B
 absoluteLaneDeviationByAllKeypresses <- function() {
-  frame <- read.csv('keyPressDataWithLaneDeviation.csv', header = TRUE)
+  frame <- keyPressDataWithLaneDeviation #read.csv('keyPressDataWithLaneDeviation.csv', header = TRUE)
   pp <- length(unique(frame$pp))
   
   frame <- frame %>% 
-    filter(phoneNrLengthAfterKeyPress == 0 | phoneNrLengthAfterKeyPress == 12,
-           typingErrorMadeOnTrial == 0, 
+    filter(typingErrorMadeOnTrial == 0, 
            partOfExperiment == "dualSteerFocus" | partOfExperiment == "dualDialFocus") %>% 
     select(partOfExperiment, pp, trial, phoneNrLengthAfterKeyPress, lanePosition) %>% 
     mutate(diff = 0)
+  
+  for(p in 1:pwrte){
+    laneAbs
+    dframe <- diff(lanAbs, 1)
+  }
   
   matrixFrame <- as.matrix(sapply(frame, as.numeric))
   batch <- nrow(frame) / 2
@@ -98,7 +146,7 @@ absoluteLaneDeviationByAllKeypresses <- function() {
 
 # C
 plot <- function() {
-  frame <- read.csv('keyPressDataWithLaneDeviation.csv', header = TRUE)
+  frame <- keyPressDataWithLaneDeviation #read.csv('keyPressDataWithLaneDeviation.csv', header = TRUE)
 
   frame <- frame %>%  filter(phoneNrLengthAfterKeyPress %in% c(1: 11), 
                              typingErrorMadeOnTrial == 0,
