@@ -9,7 +9,8 @@
 
 
 require(gtools)
-
+library(tidyverse)
+load("keyPressDataWithLaneDeviation.Rdata")
 
 
 
@@ -17,7 +18,7 @@ require(gtools)
 
 
 ### parameters related to steering
-steeringTimeOptions <- c(1,2,3,4,5,6,7,8,9,10,11,12)    #list op options for how many steering corrections can be made each time that attention is paid to steering (of steeringUpdateTime sec each) (this influences the strategy alternatives)
+steeringTimeOptions <- c(1,2,4,6,8,12) #<- c(1,2,3,4,5,6,7,8,9,10,11,12)    #list op options for how many steering corrections can be made each time that attention is paid to steering (of steeringUpdateTime sec each) (this influences the strategy alternatives)
 steeringUpdateTime <- 250    #in milliseconds
 startingPositionInLane <- 0.27 			#assume that car starts already away from lane centre (in meters)
 
@@ -279,6 +280,106 @@ runAllSimpleStrategies <- function(nrSimulations,phoneNumber)
 
 }
 
+runAllComplexStrategies <- function(nrSimulations,phoneNumber)
+{
+  
+  phoneNrSeq <- seq(1, nchar(phoneNumber) - 1, 1)
+  stratCombi <- list()
+  stratCombi <- c(stratCombi, 0)
+  for(i in 1:length(phoneNrSeq)){
+    partialList <- combinations(length(phoneNrSeq), i, phoneNrSeq)
+    for(x in 1:nrow(partialList)){
+      stratCombi[[length(stratCombi)+1]] <- partialList[x,]
+    }
+  }
+  
+  normalPhoneStructure <- c(1,6)  ### indicate at what digit positions a chunk needs to be retrieved (1st and 6th digit)
+  phoneStringLength <- 11   ### how many digits does the number have? BAD!!!
+  
+  
+  ### vectors that will contain output of the simulation. These are later used to create 1 table with all values
+  keypresses <- c()
+  times <- c()
+  deviations <- c()
+  strats <- c()
+  steers <- c()	
+  
+  ### iterate through all strategies
+  ## in this simple model we assume that a participant uses a consistent strategy throughout the trial. That is, they only type each time 1 digit, or type 2 digits at a time, or type 3 digits at a time (i.e., all possible ways of 1:phoneStringLength: 1, 2,3,4, ...11)
+  for (strat in stratCombi)
+  {
+    
+    
+    locSteerTimeOptions <- steeringTimeOptions
+    if (strat[1] == 0)
+    {
+      locSteerTimeOptions <- c(0)
+    }
+    
+    
+    
+    ### now run a trial (runOneTrial) for all combinations of how frequently you update the steering when you are steering (locSteerTimeOptions) and for the nuber of simulations that you want to run for each strategy (nrSimulations)
+    for (steerTimes in locSteerTimeOptions)
+    {
+      for (i in 1:nrSimulations)
+      {
+        
+        ### run the simulation and store the output in a table
+        locTab <- runOneTrial(strat, steerTimes, normalPhoneStructure, phoneStringLength, phoneNumber)
+        
+        ##only look at rows where there is a keypress
+        locTab <- locTab[locTab$events == "keypress",]
+        
+        ### add the relevant data points to variables that are stored in a final table
+        keypresses <- c(keypresses, 1:nrow(locTab))
+        times <- c(times, locTab$times)
+        deviations <- c(deviations, locTab$drifts)
+        strats <- c(strats, rep(toString(strat), nrow(locTab)))
+        steers <- c(steers, rep(steerTimes, nrow(locTab)))
+        
+      }
+    }#end of for steerTimes	
+    
+  }##end of for nr strategies
+  
+  
+  ### now make a new table based on all the data that was collected
+  tableAllSamples <- data.frame(keypresses,times,deviations,strats,steers)
+  
+  #### In the table we collected data for multiple simulations per strategy. Now we want to know the average performane of each strategy.
+  #### These aspects are calculated using the "aggregate" function
+  
+  
+  ## calculate average deviation at each keypress (keypresses), for each unique strategy variation (strats and steers)
+  agrResults <- with(tableAllSamples,aggregate(deviations,list(keypresses=keypresses, strats= strats, steers= steers),mean))
+  agrResults$dev <- agrResults$x
+  
+  
+  ### also calculate the time interval
+  agrResults$times <- with(tableAllSamples,aggregate(times,list(keypresses=keypresses, strats= strats, steers= steers),mean))$x
+  
+  
+  ###now calculate mean drift across the trial
+  agrResultsMeanDrift <-  with(agrResults,aggregate(dev,list(strats= strats, steers= steers),mean))
+  agrResultsMeanDrift$dev <- agrResultsMeanDrift$x
+  
+  ### and mean trial time
+  agrResultsMeanDrift$TrialTime <-  with(agrResults[agrResults$keypresses ==11,],aggregate(times,list( strats= strats, steers= steers),mean))$x
+  
+  agrResultsMeanDriftForPlot <- agrResultsMeanDrift
+  agrResultsMeanDriftForPlot$TrialTime <- agrResultsMeanDriftForPlot$TrialTime / 1000
+  agrResultsMeanDriftForPlot$dev <- abs(agrResultsMeanDriftForPlot$dev)
+  # ss <- subset(agrResultsMeanDriftForPlot, strats == "5")
+  
+  #### make a plot that visualizes all the strategies: note that trial time is divided by 1000 to get the time in seconds
+  #with(agrResultsMeanDrift,plot(TrialTime/1000,abs(dev),pch=21,bg="dark grey",col="dark grey",log="x",xlab="Dial time (s)",ylab="Average Lateral Deviation (m)"))
+  # 
+  # ### give a summary of the data	
+  # summary(agrResultsMeanDrift$TrialTime)
+  
+  agrResultsMeanDriftForPlot
+}
+
 
 runAllComplexStrategies <- function(nrSimulations,phoneNumber)
 {
@@ -536,4 +637,29 @@ updateSteering <- function(velocity,nrUpdates,startPosLane)
 	
 }
 
-runOneTrial(c(),	5,	c(1,6),	11,	"07854325698")
+humanData <- keyPressDataWithLaneDeviation %>% 
+  
+  filter(phoneNrLengthAfterKeyPress %in% c(1: 11), 
+         typingErrorMadeOnTrial == 0,
+         partOfExperiment == "dualSteerFocus" | partOfExperiment == "dualDialFocus") %>% 
+  
+  mutate(lanePosition = abs(lanePosition), 
+         Type = ifelse(partOfExperiment == "dualSteerFocus", "Steering-focus", "Dialing-focus")) %>% 
+  
+  group_by(phoneNrLengthAfterKeyPress, Type) %>% 
+  
+  summarise(laneDeviation = mean(lanePosition, na.rm = TRUE),
+            dialingTime = mean(timeRelativeToTrialStart, na.rm = TRUE) / 1000,
+            se = sd(lanePosition, na.rm = TRUE) / sqrt(11))
+
+
+plotframe <- runAllComplexStrategies(50, 12345678909)
+ss <- subset(plotframe, strats == "5")
+
+ggplot(data = plotframe, mapping = aes(x = TrialTime, y = dev)) + 
+  geom_point(color = "grey") + 
+  geom_point(data = ss, mapping = aes(x = TrialTime, y = dev), color="blue", shape=3) +
+  labs(title="Title", x="Dial time (s)", y="Average Lateral Deviation (m)")
+
+
+

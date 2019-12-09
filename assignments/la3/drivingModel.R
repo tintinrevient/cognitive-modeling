@@ -436,7 +436,7 @@ updateSteering <- function(velocity,nrUpdates,startPosLane)
 
 
 testPhoneNr <- 12345678901
-simulationRuns <- seq(0, 100, 25)
+simulationRuns <- seq(0, 250, 25)
 simulationRuns[1] <- 1
 simulationTimes <- data.frame(
   run = integer(),
@@ -446,6 +446,7 @@ simulationTimes <- data.frame(
 for(i in simulationRuns){
   st <- system.time(rs <- runAllSimpleStrategies(i, testPhoneNr))
   View(rs)
+  hist(rs$dev)
   mean <- mean(abs(rs$dev))
   sd <- sd(abs(rs$dev))
   print(mean)
@@ -455,4 +456,3 @@ for(i in simulationRuns){
 }
 simulationTimes
 plot(simulationTimes, type="b")
-
