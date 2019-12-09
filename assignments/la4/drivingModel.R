@@ -228,6 +228,7 @@ runAllSimpleStrategies <- function(nrSimulations,phoneNumber)
 
 				### run the simulation and store the output in a table
 				locTab <- runOneTrial(strategy, steerTimes,normalPhoneStructure,phoneStringLength,phoneNumber)
+				# View(locTab)
 	
 				##only look at rows where there is a keypress
 				locTab <- locTab[locTab$events == "keypress",]
@@ -248,6 +249,7 @@ runAllSimpleStrategies <- function(nrSimulations,phoneNumber)
 	### now make a new table based on all the data that was collected
 	tableAllSamples <- data.frame(keypresses,times,deviations,strats,steers)
 	
+	View(tableAllSamples)
 	
 	#### In the table we collected data for multiple simulations per strategy. Now we want to know the average performane of each strategy.
 	#### These aspects are calculated using the "aggregate" function
@@ -272,7 +274,7 @@ runAllSimpleStrategies <- function(nrSimulations,phoneNumber)
 	
 	#### make a plot that visualizes all the strategies: note that trial time is divided by 1000 to get the time in seconds
 	with(agrResultsMeanDrift,plot(TrialTime/1000,abs(dev),pch=21,bg="dark grey",col="dark grey",log="x",xlab="Dial time (s)",ylab="Average Lateral Deviation (m)"))
-	
+	View(agrResultsMeanDrift)
 	
 	### give a summary of the data	
 	summary(agrResultsMeanDrift$TrialTime)
@@ -434,4 +436,8 @@ updateSteering <- function(velocity,nrUpdates,startPosLane)
 	
 }
 
-runOneTrial(c(),	5,	c(1,6),	11,	"07854325698")
+frame <- runOneTrial(c(1,2,3,4,5,6,7,8,9,10,11),	11,	c(1,6),	11,	"07854325698")
+View(frame)
+
+runAllSimpleStrategies(2, "07854325698")
+

@@ -452,4 +452,8 @@ ggarrange(plots[[50]], plots[[100]], ncol = 2, nrow = 1)
 #   geom_point(mapping = aes(color = NumberOfSimulations)) +
 #   geom_line(aes(group = 1)) + 
 #   labs(x = "Number of simulations", y = "Duration (s)")
-
+sum <- 1
+for(i in 1:10) {
+  sum <- sum + factorial(11)/(factorial(i)*factorial((11-i)))
+}
+print(sum)
