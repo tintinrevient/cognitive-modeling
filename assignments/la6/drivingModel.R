@@ -643,8 +643,6 @@ updateSteering <- function(velocity,nrUpdates,startPosLane)
 	
 }
 
-plotframe <- readRDS("50sim12steer.Rda")#runAllSimpleStrategies(200, 12345678909)#readRDS("50sim.Rda")#runAllComplexStrategies(1, 12345678909)
-
 humanData1 <- kpdwld %>% 
   
   filter(phoneNrLengthAfterKeyPress %in% c(1: 11), 
@@ -659,7 +657,6 @@ humanData1 <- kpdwld %>%
   summarise(laneDeviation = mean(lanePosition, na.rm = TRUE),
             seLanePos = sd(lanePosition, na.rm = TRUE) / sqrt(50))
 
-View(humanData1)
 
 humanData2 <- kpdwld %>% 
   
@@ -675,87 +672,69 @@ humanData2 <- kpdwld %>%
   summarise(dialingTime = mean(timeRelativeToTrialStart, na.rm = TRUE) / 1000,
             seDialTime = sd(timeRelativeToTrialStart / 1000, na.rm = TRUE) / sqrt(12))
 
-View(humanData2)
-
 humanData <- cbind.data.frame(humanData1, subset(humanData2, select = c(dialingTime, seDialTime)))
-View(humanData)
-
-ss <- subset(plotframe, strats == "5")
 
 dialingFocusData <- humanData %>% 
   filter(Type == "Dialing-focus")
+saveRDS(dialingFocusData, "dialingFocusData.Rda")
 
 steeringFocusData <- humanData %>% 
   filter(Type == "Steering-focus")
-View(steeringFocusData)
+saveRDS(steeringFocusData, "steeringFocusData.Rda")
 
 
+combies <- data.frame(
+  sd = c(0.06, 0.06, 0.06, 0.06, 0.13, 0.13, 0.13, 0.13),
+  gauss = c(0.03, 0.03, 0.03, 0.03, 0.1, 0.1, 0.1, 0.1),
+  interkey = c(400, 400, 250, 250, 400, 400, 250, 250),
+  sims = c(10, 200, 10, 200, 10, 200, 10, 200)
+)
 
-ggplot(data = plotframe) + 
-  geom_point(mapping = aes(x = TrialTime, y = dev), color = "grey") + 
-  geom_point(data = ss, mapping = aes(x = TrialTime, y = dev), color = "black", shape = 4) +
-  geom_segment(data = dialingFocusData, mapping =
-                    aes(x = dialingTime - seDialTime,
-                        y = laneDeviation,
-                        xend = dialingTime + seDialTime,
-                        yend = laneDeviation)) +
-  geom_errorbar(data = dialingFocusData, mapping =
-                    aes(x = dialingTime,
-                        ymin = laneDeviation - seLanePos,
-                        ymax = laneDeviation + seLanePos)) +
-  geom_segment(data = steeringFocusData, mapping =
-                 aes(x = dialingTime - seDialTime,
-                     y = laneDeviation,
-                     xend = dialingTime + seDialTime,
-                     yend = laneDeviation)) +
-  geom_errorbar(data = steeringFocusData, mapping =
-                    aes(x = dialingTime,
-                        ymin = laneDeviation - seLanePos,
-                        ymax = laneDeviation + seLanePos)) +
-  geom_point(data = dialingFocusData, mapping = aes(x = dialingTime, y = laneDeviation), shape = 22, size = 5, fill = "white") +
-  geom_point(data = steeringFocusData, mapping = aes(x = dialingTime, y = laneDeviation), shape = 23, size = 5, fill = "white") +
-  coord_trans(x = "log10") + 
-  # coord_cartesian(xlim = c(0, 40), ylim = c(0.0, 0.8)) +
-  # scale_x_log10() + 
-  labs(title="50 Simulations", x="Dial time (s)", y="Average Lateral Deviation (m)")
-
-
-tempFrame <- plotframe
-newframe <- tempFrame %>% 
-  mutate(digits = trimws(strsplit(toString(strats[1:2]), ",")))
-
-x <- tempFrame$strats
-digits <- c()
-for(i in 1: length(x)) {
-  y <- x[i]
-  z <- strsplit(toString(y), ",")
-  j <- length(z[[1]])
-  digits <- c(digits, j)
-}
-firstDigit <- c()
-for(i in 1: length(x)) {
-  y <- x[i]
-  z <- strsplit(toString(y), ",")
-  j <- z[[1]][1]
-  firstDigit <- c(firstDigit, strtoi(j))
-}
-
-
-tempFrame$digits <- digits
-tempFrame$firstDigit <- firstDigit
-
-ggplot(data = tempFrame) + geom_histogram(mapping = aes(x = digits), binwidth = 1, color = "black", fill="white")
-ggplot(data = tempFrame) + geom_histogram(mapping = aes(x = firstDigit), binwidth = 1, color = "black", fill="white")
-
-View(tempFrame)
-
-
-total <- matrix()
-for(i in 1:nrow(tempFrame)){
-  total <- matrix(total, trimws(strsplit(toString(tempFrame$strats), ",")))
+for(i in 1:nrow(combies)){
+  
+  row <- combies[i,]
+  
+  gaussDeviateSD <- row$sd
+  gaussDriveNoiseSD <- row$gauss
+  singleTaskKeyPressTimes <- rep(row$interkey, 11)
+  
+  plotframe <- runAllSimpleStrategies(row$sims, 12345678909)#readRDS("50sim.Rda")#runAllComplexStrategies(1, 12345678909)
+  
+  ss <- subset(plotframe, strats == "5")
+  
+  ggp <- ggplot(data = plotframe) + 
+    geom_point(mapping = aes(x = TrialTime, y = dev), color = "grey") + 
+    geom_point(data = ss, mapping = aes(x = TrialTime, y = dev), color = "black", shape = 4) +
+    geom_segment(data = dialingFocusData, mapping =
+                      aes(x = dialingTime - seDialTime,
+                          y = laneDeviation,
+                          xend = dialingTime + seDialTime,
+                          yend = laneDeviation)) +
+    geom_errorbar(data = dialingFocusData, mapping =
+                      aes(x = dialingTime,
+                          ymin = laneDeviation - seLanePos,
+                          ymax = laneDeviation + seLanePos)) +
+    geom_segment(data = steeringFocusData, mapping =
+                   aes(x = dialingTime - seDialTime,
+                       y = laneDeviation,
+                       xend = dialingTime + seDialTime,
+                       yend = laneDeviation)) +
+    geom_errorbar(data = steeringFocusData, mapping =
+                      aes(x = dialingTime,
+                          ymin = laneDeviation - seLanePos,
+                          ymax = laneDeviation + seLanePos)) +
+    geom_point(data = dialingFocusData, mapping = aes(x = dialingTime, y = laneDeviation), shape = 22, size = 5, fill = "white") +
+    geom_point(data = steeringFocusData, mapping = aes(x = dialingTime, y = laneDeviation), shape = 23, size = 5, fill = "white") +
+    coord_trans(x = "log10") + 
+    labs(
+      title = sprintf("Simulations: %s, Drift SD: %s, GaussNoise: %s, InterKey %s", row$sims, row$sd, row$gauss, row$interkey), 
+      x="Dial time (s)", 
+      y="Average Lateral Deviation (m)")
+  
+  ggsave(sprintf("ss%ssd%sik%s.png", row$sims, row$sd * 100, row$interkey), plot = ggp)
+  saveRDS(plotframe, sprintf("plotDatass%ssd%sik%s.Rda", row$sims, row$sd * 100, row$interkey))
 }
 
-x <- toString(tempFrame$strats[1])
-x
 
-y <- strsplit(x, ",")
+
+
