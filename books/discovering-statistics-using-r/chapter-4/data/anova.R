@@ -1,0 +1,8 @@
+library(car)
+library(gplots)
+library(HH)
+library(rrcov)
+library(multcomp)
+library(effects)
+library(MASS)
+library(mvoutlier)
