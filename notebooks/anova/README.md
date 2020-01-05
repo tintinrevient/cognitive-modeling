@@ -115,7 +115,7 @@ detach(cholesterol)
 ```
 
 <p float="left">
-	<img src="./cholesterol.png" width="500" />
+	<img src="./pix/cholesterol.png" width="500" />
 </p>
 
 **One-way ANOVA assumption**: 
@@ -135,7 +135,7 @@ qqPlot(lm(response ~ trt, data = cholesterol),
 **normality assumption has been met**:
 * the data falls within the 95% confidence envelope
 <p float="left">
-	<img src="./qq-plot.png" width="500" />
+	<img src="./pix/qq-plot.png" width="500" />
 </p>
 
 **Bartlett's test**
@@ -249,7 +249,7 @@ ancova(weight ~ gesttime + dose, data = litter)
 ```
 
 <p float="left">
-	<img src="./ancova.png" width="600" />
+	<img src="./pix/ancova.png" width="600" />
 </p>
 
 ### Two-way ANOVA
@@ -278,7 +278,7 @@ interaction2wt(len ~ supp * dose)
 ```
 
 <p float="left">
-	<img src="./interaction2wt.png" width="600" />
+	<img src="./pix/interaction2wt.png" width="600" />
 </p>
 
 ### Repeated measures ANOVA
@@ -306,7 +306,7 @@ with(w1b1, interaction.plot(conc, Type, uptake,
 * the Type and concentration interaction effect is significant at the 0.01 level
 * the difference between Quebec and Mississippi is more pronounced at higher ambient CO2 concentrations
 <p float="left">
-	<img src="./repeated-measures.png" width="500" />
+	<img src="./pix/repeated-measures.png" width="500" />
 </p>
 
 **when dealing with repeated measures ANOVA, you typically need the data in long format before fitting models**
