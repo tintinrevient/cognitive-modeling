@@ -4,7 +4,8 @@ fit <- lm(weight ~ height, data = women)
 summary(fit)
 fitted(fit)
 residuals(fit)
-plot(women$height, women$weight, xlab = "Height (in inches)", ylab = "Weight (in pounds)")
+plot(women$height, women$weight, 
+     xlab = "Height (in inches)", ylab = "Weight (in pounds)")
 abline(fit)
 
 par(mfrow = c(2, 2))
@@ -12,19 +13,31 @@ plot(fit)
 
 fit2 <- lm(weight ~ height + I(height^2), data = women)
 summary(fit2)
-plot(women$height, women$weight, xlab = "Height (in inches)", ylab = "Weight (in pounds)")
+plot(women$height, women$weight, 
+     xlab = "Height (in inches)", ylab = "Weight (in pounds)")
 lines(women$height, fitted(fit2))
+
+lines(women$height, fitted(fit))
 
 par(mfrow = c(2, 2))
 plot(fit2)
 
-library(car)
 states <- as.data.frame(state.x77[, c("Murder", "Population", "Illiteracy", "Income", "Frost")])
+
 cor(states)
-scatterplotMatrix(states, spread = FALSE, smoother.args = list(ltyp = 2), main = "Scatter Plot Matrix")
+
+library(car)
+scatterplotMatrix(states, 
+                  spread = FALSE, 
+                  smoother.args = list(ltyp = 2), 
+                  main = "Scatter Plot Matrix")
 fit <- lm(Murder ~ Population + Illiteracy + Income + Frost, data = states)
 summary(fit)
 confint(fit)
+
+# multiple linear regression with interactions
+fit <- lm(mpg ~ hp + wt + hp:wt, data = mtcars)
+summary(fit)
 
 par(mfrow = c(2, 2))
 plot(fit)
@@ -32,7 +45,12 @@ plot(fit)
 # various tests
 
 # normal
-qqPlot(fit, labels = row.names(states), id.method = "identify", simulate = TRUE, main = "Q-Q Plot") 
+qqPlot(fit, 
+       labels = row.names(states), 
+       id.method = "identify", 
+       simulate = TRUE, 
+       main = "Q-Q Plot") 
+
 # independence
 durbinWatsonTest(fit)
 # linear
