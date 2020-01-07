@@ -51,6 +51,12 @@ qqPlot(fit,
        simulate = TRUE, 
        main = "Q-Q Plot") 
 
+# outlier nevada
+states["Nevada",]
+fitted(fit)["Nevada"]
+residuals(fit)["Nevada"]
+rstudent(fit)["Nevada"]
+
 # independence
 durbinWatsonTest(fit)
 # linear
