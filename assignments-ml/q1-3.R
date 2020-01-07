@@ -1,5 +1,7 @@
 library(viridisLite)
 library(gridExtra)
+library(lattice)
+library(tidyverse)
 
 # Question 1
 nrm <- read.table("RSAlabassignment/NeuralResponses")
