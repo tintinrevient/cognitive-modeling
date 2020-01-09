@@ -56,7 +56,7 @@ avgPa <- matrix(data = 0, nrow = 92, ncol = 92);
 for(i in 1:length(pa_dissimilarity_list)) {
   avgPa <- avgPa + pa_dissimilarity_list[[i]];
 }
-avgPa <- avgPa / pp
+avgPa <- avgPa / pa
 
 # Compare the averaged RDMs of 12 subjects to a single RDM
 avgPlot <- levelplot(avgPa, 
