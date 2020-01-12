@@ -10,12 +10,21 @@ col <- ncol(hMaxRDM)
 
 coul <- viridis(row * col)
 
-
-levelplot(unname(as.matrix(hMaxRDM)),
+# the model plot
+modePlot <- levelplot(unname(as.matrix(hMaxRDM)),
           col.regions = coul,
           main = "Behaviour RDM",
           xlab = "images (1 - 92)",
           ylab = "images (1 - 92)")
+
+# the human data from IT neural responses
+humanPlot <- levelplot(avgPa, 
+                       main = "Neuro RDM of human",
+                       col.regions = coul, 
+                       xlab = "images (1 - 92)",
+                       ylab = "images (1 - 92)")
+
+grid.arrange(modePlot, humanPlot, ncol=2)
 
 # all data
 hMaxRDM_filter <- lower.tri(hMaxRDM, diag = FALSE)
