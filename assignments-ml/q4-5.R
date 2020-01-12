@@ -1,6 +1,4 @@
 # suppress the scientific notation of numbers
-options(scipen=999)
-source("q1-3.R")
 
 categoryVectorsTable <- read.table("RSAlabassignment/CategoryVectors")
 categoryLablesTable <- read.table("RSAlabassignment/CategoryLabels")

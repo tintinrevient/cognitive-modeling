@@ -1,4 +1,5 @@
-options(scipen=999)
+library(lsr)
+# options(scipen=999)
 
 categoryVectorsTable <- read.table("RSAlabassignment/CategoryVectors")
 categoryLablesTable <- read.table("RSAlabassignment/CategoryLabels")
@@ -67,16 +68,62 @@ data_frame <- data_frame %>% rename(dissimilarity = neuralResponses_unique,
 
 View(data_frame)
 
+library(car)
 # ANOVA
-# Only animacy as the input factor
-animacy_fit <- aov(dissimilarity ~ animacy, data = data_frame)
-animacy_fit <- lm(dissimilarity ~ animacy, data = data_frame)
-summary(animacy_fit)
+data_frame$animacy <- factor(data_frame$animacy)
+data_frame$faceness <- factor(data_frame$faceness) 
+fit <- aov(dissimilarity ~ animacy + animacy:faceness, data = data_frame)
+summary(fit)
 
-# Only faceness as the input factor
-faceness_fit <- aov(dissimilarity ~ faceness, data = data_frame)
-faceness_fit <- lm(dissimilarity ~ faceness, data = data_frame)
-summary(faceness_fit)
+# eta
+etaSquared(fit, type = 2, anova = TRUE)
+
+
+# glm(starting ~ animacy + animacy_face)
+model <- glm(dissimilarity ~ animacy + animacy:faceness, data = data_frame)
+summary(model)
+
+# beta 
+library(reghelper)
+beta(model, x = TRUE, y = TRUE)
+
+
+# f-test manually
+animacy_only_data_frame <- data_frame[(which(data_frame$animacy == 1)),]
+faceness_only_data_frame <- data_frame[(which(data_frame$faceness == 1)), ]
+
+df_animacy <- nrow(animacy_only_data_frame) - 1
+df_faceness <- nrow(faceness_only_data_frame) - 1
+critical_value <- 1.12
+
+variance_animacy <- var(animacy_only_data_frame$dissimilarity)
+variance_faceness <- var(faceness_only_data_frame$dissimilarity)
+
+# if f_ratio is greater than the critical value, we reject the null hypothesis:
+# null hypothesis: variances are equal
+# alternative hypothesis: variances are not equal
+f_ratio <- variance_faceness / variance_animacy
+
+# anova manually
+
+total_mean <- mean(data_frame$dissimilarity)
+animacy_mean <- mean(animacy_only_data_frame$dissimilarity)
+faceness_mean <- mean(faceness_only_data_frame$dissimilarity)
+
+animacy_variance_between <- total_mean - animacy_mean
+faceness_variance_between <- total_mean - faceness_mean
+
+animacy_variance_within <- max(animacy_only_data_frame$dissimilarity) - 
+  min(animacy_only_data_frame$dissimilarity)
+
+faceness_variance_within <- max(faceness_only_data_frame$dissimilarity) - 
+  min(faceness_only_data_frame$dissimilarity)
+
+# f value is larger than 1, reject null hypothesis H0
+# null hypothesis: means are equal, and samples come from the same population
+# alternative hypothesis: means are not equal, and samples come from different population
+f_animacy <- animacy_variance_between / animacy_variance_within
+f_faceness <- faceness_variance_between / faceness_variance_within
 
 # Question 10
 # Relative effect sizes for these two effects
