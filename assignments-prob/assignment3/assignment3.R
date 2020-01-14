@@ -55,22 +55,23 @@ expected.success <- function(threshold, scale.points, densityf, cumulativef) {
 #Task 1
 
 utility <- function(threshold, scale.points, coverage.parameter, densityf, cumulativef) {
-    ...
+    expected.success(threshold, scale.points, densityf, cumulativef) + coverage.parameter * 
+        sum(sapply(threshold:max(scale.points), function(x){densityf(x)}))
 }
 
 
 probability.threshold <- function(threshold, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
-
-    ...
-
+    exp(lambda * utility(threshold, scale.points, coverage.parameter, densityf, cumulativef)) / 
+        sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, coverage.parameter, densityf, cumulativef))}))
 }
 
 
 use.adjective <- function(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
-
-    ...
-
+    #probability.threshold(threshold, scale.points, lambda, coverage.parameter, densityf, cumulativef)
+    sum(sapply(scale.points[1:degree], function(x){probability.threshold(x, scale.points, lambda, coverage.parameter, densityf, cumulativef)}))
 }
+
+plot(sapply(scale.points, function(x) {use.adjective(x, scale.points, 50, 0, function(x) {dnorm(x, 180, 10)}, function(x) {pnorm(x, 180, 10)})}))
 
 # Help - tests you should pass
 
@@ -167,8 +168,3 @@ likelihood <- function(param1) {
 #out <- runMCMC(bayesianSetup = bayesianSetup, settings = settings)
 
 # Task 5
-
-\bibliographystyle{linquiry2}
-\bibliography{mybib}
-
-\end{document}
