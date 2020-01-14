@@ -47,9 +47,8 @@ g1
 
 expected.success <- function(threshold, scale.points, densityf, cumulativef) {
 
-
-    sum(sapply(scale.points[1]:max(1, scale.points[which(scale.points==threshold)-1]), function(x) {densityf(x) * densityf(x)})) + 
-        sum(sapply(scale.points[which(scale.points==threshold)]:scale.points[length(scale.points)], function(x) {densityf(x) * literal.listener(x, threshold, densityf, cumulativef)}))
+    ifelse(threshold>min(scale.points), sum(sapply(scale.points[scale.points<threshold], function(x) {densityf(x) * densityf(x)})), 0) + 
+        sum(sapply(scale.points[scale.points>=threshold], function(x) {densityf(x) * literal.listener(x, threshold, densityf, cumulativef)}))
 
 }
 

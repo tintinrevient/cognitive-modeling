@@ -158,9 +158,8 @@ This function is implemented below:
 
 expected.success <- function(threshold, scale.points, densityf, cumulativef) {
 
-
-    sum(sapply(scale.points[1]:max(1, scale.points[which(scale.points==threshold)-1]), function(x) {densityf(x) * densityf(x)})) + 
-        sum(sapply(scale.points[which(scale.points==threshold)]:scale.points[length(scale.points)], function(x) {densityf(x) * literal.listener(x, threshold, densityf, cumulativef)}))
+    ifelse(threshold>min(scale.points), sum(sapply(scale.points[scale.points<threshold], function(x) {densityf(x) * densityf(x)})), 0) + 
+        sum(sapply(scale.points[scale.points>=threshold], function(x) {densityf(x) * literal.listener(x, threshold, densityf, cumulativef)}))
 
 }
 
@@ -384,7 +383,7 @@ summary(out)
 
 To read this, check MAP (maximum a posteriori estimation), which gives us point estimates -- the mode of the distributions of the parameters. What we see is that $p1$ is kept low (since it cannot rise above 0.1, anyway) and the second parameter is around 0.4. This makes sense since most values are extreme (either 0 or 1) so having a mean of normal distribution around 0.5 minimizes the distance from those extreme values.
 
-\textbf{Task 4:} You will now implement the parameter estimation for our model using the data from data.gaus.big (that is, we check only one adjective and only one distribution of that adjective).
+You will now implement the parameter estimation for our model using the data from data.gaus.big (that is, we check only one adjective and only one distribution of that adjective).
 
 I specify the prior distribution for you. The prior distribution for coverage.parameter is Uniform distribution Unif(-1,0) (that is, any value between -1 and 0 including -1 and 0 is equally likely, no other values are possible). The prior distribution for lambda is Unif(1, 50). This is how this is encoded:
 
@@ -429,7 +428,10 @@ After you are done, you can run this model by uncommenting and specifying:
 
 @
 
-\textbf{Task 5:} Explore the distribution of the parameters in out. What do we see? What values have been found for lambda and coverage.parameter? Report summary statistics on lambda and coverage.parameter (MAP, median, 2.5percent to 97.5percent interval). Discuss briefly the summaries (i.e., are values in out widespread or very narrow? If so, why do you think this is the case and is it good/bad?)
+\textbf{Task 4:} Explore the distribution of the parameters in out. What do we see? What values have been found for lambda and coverage.parameter? Report summary statistics on lambda and coverage.parameter (MAP, median, 2.5percent to 97.5percent interval). Discuss briefly the summaries (i.e., are values in out widespread or very narrow? If so, why do you think this is the case and is it good/bad?)
+
+
+\textbf{Task 5:} Expand your model to construct the posterior distribution of the two parameters using three adjectives (\textit{big}, \textit{pointy}, \textit{tall}) in all three distributions. Explore the distribution of the parameters in out. Report summary statistics on lambda and coverage.parameter.
 
 \bibliographystyle{linquiry2}
 \bibliography{mybib}
