@@ -61,19 +61,16 @@ utility <- function(threshold, scale.points, coverage.parameter, densityf, cumul
 
 
 probability.threshold <- function(threshold, scale.points, lambda, coverage.parameter, densityf, cumulativef, denominator = NULL) {
-    if(is.null(denominator))
+    if(is.null(denominator)){
         denominator = sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, coverage.parameter, densityf, cumulativef))}))
+    }
     exp(lambda * utility(threshold, scale.points, coverage.parameter, densityf, cumulativef)) / denominator
         
 }
 
 use.adjective <- function(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
     denominator = sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, coverage.parameter, densityf, cumulativef))}))
-    for(t in min(scale.points):degree){
-        if(t > length(mem) - 1){
-            mem <- c(mem, probability.threshold(t, scale.points, lambda, coverage.parameter, densityf, cumulativef, denominator))
-        }
-    }
+    mem <- c(mem, probability.threshold(t, scale.points, lambda, coverage.parameter, densityf, cumulativef, denominator))
     sum(mem)
 }
 
@@ -90,14 +87,17 @@ task1.height$y <- sapply(task1.height$x, function(x) {dnorm(x, mean=180, sd=10)}
 task1.height$pt <- sapply(task1.height$x, function(x) {probability.threshold(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 180, 10)}, cumulativef=function(x) {pnorm(x, 180, 10)} )})
 task1.height$ua <- sapply(task1.height$x, function(x) {use.adjective(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 180, 10)}, cumulativef=function(x) {pnorm(x, 180, 10)} )})
 
-gt1 <- ggplot(task1.height, aes(x=x, y=y)) 
+gt1 <- ggplot(task1.height, aes(x=x, y=pt)) 
 #gt1 <- gt1 + geom_area(fill="green", alpha=.4) 
 
 gt1 <- gt1 + geom_area(aes(y=pt),fill="steelblue", alpha=.4) 
 #gt1 <- gt1 + geom_area(aes(y=ua),fill="red", alpha=.4) 
-gt1 <- gt1 + xlab("height") + ylab("P") + theme_gray(20) 
+gt1 <- gt1 + xlab("height (cm)") + ylab("P") + ggtitle("Threshold probability") + theme_gray(20) 
 gt1
-plot(task1.height$ua)
+
+ggplot(task1.height, aes(x, ua)) + geom_line() + xlab("height (cm)") + ylab("P") + ggtitle("Use adjective") + theme_gray(20)
+
+
 ptmax <- max(task1.height$pt)
 uamaxlope <- max(diff(task1.height$ua))
 uamaxlopeindex <- which(diff(task1.height$ua) == max(diff(task1.height$ua)))
@@ -125,6 +125,24 @@ round(sapply(1:10, function(x) {use.adjective(x, 1:10, 50, 0, function(x) {dnorm
 # Task 2:
 # Explore expected.success and use.adjective for various prior distribution functions.
 # For this, assume that coverage.parameter $c$ is at 0 and lambda is at 50.
+
+mem <- c()
+scale.points = 65:135
+task2.height <- data.frame(x=scale.points)
+task2.height$y <- sapply(task2.height$x, function(x) {dnorm(x, mean=100, sd=10)})
+plot(sapply(scale.points, function(x){expected.success(x, scale.points, function(x) {dnorm(x, 100, 10)}, function(x) {pnorm(x, 100, 10)})}))
+task2.height$pt <- sapply(task2.height$x, function(x) {probability.threshold(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 100, 10)}, cumulativef=function(x) {pnorm(x, 100, 10)} )})
+task2.height$ua <- sapply(task2.height$x, function(x) {use.adjective(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 100, 10)}, cumulativef=function(x) {pnorm(x, 100, 10)} )})
+
+# plot 1
+gt2 <- ggplot(task2.height, aes(x=x, y=pt)) 
+gt2 <- gt2 + geom_area(aes(y=pt),fill="steelblue", alpha=.4) 
+gt2 <- gt2 + xlab("IQ") + ylab("P") + ggtitle("Threshold probability") + theme_gray(20) 
+gt2
+
+# plot 2
+ggplot(task2.height, aes(x, ua)) + geom_line() + xlab("IQ") + ylab("P") + ggtitle("Use adjective") + theme_gray(20)
+
 
 data.adjective <- read.csv(file="adjective-data.csv", header=TRUE)
 
