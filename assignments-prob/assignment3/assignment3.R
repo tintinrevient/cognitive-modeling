@@ -60,18 +60,54 @@ utility <- function(threshold, scale.points, coverage.parameter, densityf, cumul
 }
 
 
-probability.threshold <- function(threshold, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
-    exp(lambda * utility(threshold, scale.points, coverage.parameter, densityf, cumulativef)) / 
-        sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, coverage.parameter, densityf, cumulativef))}))
+probability.threshold <- function(threshold, scale.points, lambda, coverage.parameter, densityf, cumulativef, denominator = NULL) {
+    if(is.null(denominator))
+        denominator = sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, coverage.parameter, densityf, cumulativef))}))
+    exp(lambda * utility(threshold, scale.points, coverage.parameter, densityf, cumulativef)) / denominator
+        
 }
-
 
 use.adjective <- function(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
-    #probability.threshold(threshold, scale.points, lambda, coverage.parameter, densityf, cumulativef)
-    sum(sapply(scale.points[1:degree], function(x){probability.threshold(x, scale.points, lambda, coverage.parameter, densityf, cumulativef)}))
+    denominator = sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, coverage.parameter, densityf, cumulativef))}))
+    for(t in min(scale.points):degree){
+        if(t > length(mem) - 1){
+            mem <- c(mem, probability.threshold(t, scale.points, lambda, coverage.parameter, densityf, cumulativef, denominator))
+        }
+    }
+    sum(mem)
 }
 
-plot(sapply(scale.points, function(x) {use.adjective(x, scale.points, 50, 0, function(x) {dnorm(x, 180, 10)}, function(x) {pnorm(x, 180, 10)})}))
+View(mem)
+
+# use.adjective <- function(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
+#     denominator = sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, coverage.parameter, densityf, cumulativef))}))
+#     sum(sapply(min(scale.points):degree, function(x){probability.threshold(x, scale.points, lambda, coverage.parameter, densityf, cumulativef, denominator)}))
+# }
+
+mem <- c()
+task1.height <- data.frame(x=scale.points)
+task1.height$y <- sapply(task1.height$x, function(x) {dnorm(x, mean=180, sd=10)}) 
+task1.height$pt <- sapply(task1.height$x, function(x) {probability.threshold(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 180, 10)}, cumulativef=function(x) {pnorm(x, 180, 10)} )})
+task1.height$ua <- sapply(task1.height$x, function(x) {use.adjective(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 180, 10)}, cumulativef=function(x) {pnorm(x, 180, 10)} )})
+
+gt1 <- ggplot(task1.height, aes(x=x, y=y)) 
+#gt1 <- gt1 + geom_area(fill="green", alpha=.4) 
+
+gt1 <- gt1 + geom_area(aes(y=pt),fill="steelblue", alpha=.4) 
+#gt1 <- gt1 + geom_area(aes(y=ua),fill="red", alpha=.4) 
+gt1 <- gt1 + xlab("height") + ylab("P") + theme_gray(20) 
+gt1
+plot(task1.height$ua)
+ptmax <- max(task1.height$pt)
+uamaxlope <- max(diff(task1.height$ua))
+uamaxlopeindex <- which(diff(task1.height$ua) == max(diff(task1.height$ua)))
+uamax <- task1.height[uamaxlopeindex,]$ua
+
+subset(task1.height, pt == ptmax)$x
+subset(task1.height, ua == uamax)$x
+
+# data <- sapply(1:10, function(x) {use.adjective(x, scale.points, 50, 0, function(x) {dnorm(x, 180, 10)}, function(x) {pnorm(x, 180, 10)})})
+# plot(data)
 
 # Help - tests you should pass
 
