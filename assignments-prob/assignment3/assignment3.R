@@ -128,21 +128,59 @@ round(sapply(1:10, function(x) {use.adjective(x, 1:10, 50, 0, function(x) {dnorm
 
 mem <- c()
 scale.points = 65:135
-task2.height <- data.frame(x=scale.points)
-task2.height$y <- sapply(task2.height$x, function(x) {dnorm(x, mean=100, sd=10)})
-plot(sapply(scale.points, function(x){expected.success(x, scale.points, function(x) {dnorm(x, 100, 10)}, function(x) {pnorm(x, 100, 10)})}))
-task2.height$pt <- sapply(task2.height$x, function(x) {probability.threshold(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 100, 10)}, cumulativef=function(x) {pnorm(x, 100, 10)} )})
-task2.height$ua <- sapply(task2.height$x, function(x) {use.adjective(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 100, 10)}, cumulativef=function(x) {pnorm(x, 100, 10)} )})
+task2iq.height <- data.frame(x=scale.points)
+task2iq.height$y <- sapply(task2iq.height$x, function(x) {dnorm(x, mean=100, sd=10)})
+task2iq.height$esiq <- sapply(scale.points, function(x){expected.success(x, scale.points, function(x) {dnorm(x, 100, 10)}, function(x) {pnorm(x, 100, 10)})})
+task2iq.height$pt <- sapply(task2iq.height$x, function(x) {probability.threshold(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 100, 10)}, cumulativef=function(x) {pnorm(x, 100, 10)} )})
+task2iq.height$ua <- sapply(task2iq.height$x, function(x) {use.adjective(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 100, 10)}, cumulativef=function(x) {pnorm(x, 100, 10)} )})
 
 # plot 1
-gt2 <- ggplot(task2.height, aes(x=x, y=pt)) 
-gt2 <- gt2 + geom_area(aes(y=pt),fill="steelblue", alpha=.4) 
-gt2 <- gt2 + xlab("IQ") + ylab("P") + ggtitle("Threshold probability") + theme_gray(20) 
-gt2
+gt2iq <- ggplot(task2iq.height, aes(x=x, y=pt)) 
+gt2iq <- gt2iq + geom_area(aes(y=pt),fill="steelblue", alpha=.4) 
+gt2iq <- gt2iq + xlab("IQ") + ylab("P") + ggtitle("Threshold probability") + theme_gray(20) 
+gt2iq
 
 # plot 2
-ggplot(task2.height, aes(x, ua)) + geom_line() + xlab("IQ") + ylab("P") + ggtitle("Use adjective") + theme_gray(20)
+ggplot(task2iq.height, aes(x, ua)) + geom_line() + xlab("IQ") + ylab("P") + ggtitle("Use adjective") + theme_gray(20)
 
+iqt <- subset(task2iq.height, esiq == max(task2iq.height$esiq))
+iqt$x
+ptmaxiq <- max(task2iq.height$pt)
+uamaxlopeiq <- max(diff(task2iq.height$ua))
+uamaxlopeindexiq <- which(diff(task2iq.height$ua) == max(diff(task2iq.height$ua)))
+uamaxiq <- task2iq.height[uamaxlopeindexiq,]$ua
+
+subset(task2iq.height, pt == ptmaxiq)$x
+subset(task2iq.height, ua == uamaxiq)$x
+
+
+
+mem <- c()
+scale.points = 1:10
+task2wt.height <- data.frame(x=scale.points)
+task2wt.height$y <- sapply(task2wt.height$x, function(x) {dnorm(x, shape=4, scale=1, log = FALSE)})
+task2wt.height$eswt <- sapply(scale.points, function(x){expected.success(x, scale.points, function(x) {dnorm(x, 4, 2)}, function(x) {pnorm(x, 4, 2)})})
+task2wt.height$pt <- sapply(task2wt.height$x, function(x) {probability.threshold(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 4, 2)}, cumulativef=function(x) {pnorm(x, 4, 2)})})
+task2wt.height$ua <- sapply(task2wt.height$x, function(x) {use.adjective(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 4, 2)}, cumulativef=function(x) {pnorm(x, 4, 2)})})
+
+# plot 1
+gt2wt <- ggplot(task2wt.height, aes(x=x, y=pt)) 
+gt2wt <- gt2wt + geom_area(aes(y=pt),fill="steelblue", alpha=.4) 
+gt2wt <- gt2wt + xlab("Waiting time (min)") + ylab("P") + ggtitle("Threshold probability") + theme_gray(20) 
+gt2wt
+
+# plot 2
+ggplot(task2wt.height, aes(x, ua)) + geom_line() + xlab("Waiting time (min)") + ylab("P") + ggtitle("Use adjective") + theme_gray(20)
+
+wtt <- subset(task2wt.height, eswt == max(task2wt.height$eswt))
+wtt$x
+ptmaxwt <- max(task2wt.height$pt)
+uamaxlopewt <- max(diff(task2wt.height$ua))
+uamaxlopeindexwt <- which(diff(task2wt.height$ua) == max(diff(task2wt.height$ua)))
+uamaxwt <- task2wt.height[uamaxlopeindexwt,]$ua
+
+subset(task2wt.height, pt == ptmaxwt)$x
+subset(task2wt.height, ua == uamaxwt)$x
 
 data.adjective <- read.csv(file="adjective-data.csv", header=TRUE)
 
