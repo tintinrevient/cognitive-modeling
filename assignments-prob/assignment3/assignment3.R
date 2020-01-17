@@ -68,22 +68,21 @@ probability.threshold <- function(threshold, scale.points, lambda, coverage.para
         
 }
 
-use.adjective <- function(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
-    denominator = sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, coverage.parameter, densityf, cumulativef))}))
-    mem <- c(mem, probability.threshold(t, scale.points, lambda, coverage.parameter, densityf, cumulativef, denominator))
-    sum(mem)
-}
+# use.adjective <- function(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
+#     denominator = sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, coverage.parameter, densityf, cumulativef))}))
+#     mem <- c(mem, probability.threshold(t, scale.points, lambda, coverage.parameter, densityf, cumulativef, denominator))
+#     sum(mem)
+# }
 
 View(mem)
 
-# use.adjective <- function(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
-#     denominator = sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, coverage.parameter, densityf, cumulativef))}))
-#     sum(sapply(min(scale.points):degree, function(x){probability.threshold(x, scale.points, lambda, coverage.parameter, densityf, cumulativef, denominator)}))
-# }
+use.adjective <- function(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
+    denominator = sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, coverage.parameter, densityf, cumulativef))}))
+    sum(sapply(min(scale.points):degree, function(x){probability.threshold(x, scale.points, lambda, coverage.parameter, densityf, cumulativef, denominator)}))
+}
 
 mem <- c()
 task1.height <- data.frame(x=scale.points)
-task1.height$y <- sapply(task1.height$x, function(x) {dnorm(x, mean=180, sd=10)}) 
 task1.height$pt <- sapply(task1.height$x, function(x) {probability.threshold(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 180, 10)}, cumulativef=function(x) {pnorm(x, 180, 10)} )})
 task1.height$ua <- sapply(task1.height$x, function(x) {use.adjective(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 180, 10)}, cumulativef=function(x) {pnorm(x, 180, 10)} )})
 
@@ -127,9 +126,8 @@ round(sapply(1:10, function(x) {use.adjective(x, 1:10, 50, 0, function(x) {dnorm
 # For this, assume that coverage.parameter $c$ is at 0 and lambda is at 50.
 
 mem <- c()
-scale.points = 65:135
+scale.points <- c(65:135)
 task2iq.height <- data.frame(x=scale.points)
-task2iq.height$y <- sapply(task2iq.height$x, function(x) {dnorm(x, mean=100, sd=10)})
 task2iq.height$esiq <- sapply(scale.points, function(x){expected.success(x, scale.points, function(x) {dnorm(x, 100, 10)}, function(x) {pnorm(x, 100, 10)})})
 task2iq.height$pt <- sapply(task2iq.height$x, function(x) {probability.threshold(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 100, 10)}, cumulativef=function(x) {pnorm(x, 100, 10)} )})
 task2iq.height$ua <- sapply(task2iq.height$x, function(x) {use.adjective(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 100, 10)}, cumulativef=function(x) {pnorm(x, 100, 10)} )})
@@ -156,9 +154,8 @@ subset(task2iq.height, ua == uamaxiq)$x
 
 
 mem <- c()
-scale.points = 1:10
+scale.points <- c(1:10)
 task2wt.height <- data.frame(x=scale.points)
-task2wt.height$y <- sapply(task2wt.height$x, function(x) {dnorm(x, shape=4, scale=1, log = FALSE)})
 task2wt.height$eswt <- sapply(scale.points, function(x){expected.success(x, scale.points, function(x) {dnorm(x, 4, 2)}, function(x) {pnorm(x, 4, 2)})})
 task2wt.height$pt <- sapply(task2wt.height$x, function(x) {probability.threshold(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 4, 2)}, cumulativef=function(x) {pnorm(x, 4, 2)})})
 task2wt.height$ua <- sapply(task2wt.height$x, function(x) {use.adjective(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 4, 2)}, cumulativef=function(x) {pnorm(x, 4, 2)})})
@@ -205,8 +202,38 @@ p.m <- ggplot(data.moved,aes(x=Stimulus,y=100*percentage,colour=Adjective))+geom
 grid.arrange(p.g,p.l,p.m,ncol=2)
 
 # Task 3:
+scale.points <- c(1:14)
+task3.guas <- data.frame(x=scale.points)
+task3.guas$ua0 <- sapply(task3.guas$x, function(x) {use.adjective(x, scale.points, 40, 0.1, densityf=function(x) {dnorm(x, 6, 2)}, cumulativef=function(x) {pnorm(x, 6, 2)})})
+task3.guas$ua1 <- sapply(task3.guas$x, function(x) {use.adjective(x, scale.points, 40, -0.1, densityf=function(x) {dnorm(x, 6, 2)}, cumulativef=function(x) {pnorm(x, 6, 2)})})
+task3.guas$ua2 <- sapply(task3.guas$x, function(x) {use.adjective(x, scale.points, 40, 0, densityf=function(x) {dnorm(x, 6, 2)}, cumulativef=function(x) {pnorm(x, 6, 2)})})
+
+task3.ls <- data.frame(x=scale.points)
+task3.ls$ua0 <- sapply(task3.ls$x, function(x) {use.adjective(x, scale.points, 40, 0.1, densityf=function(x) {dgamma(x, 4, 1.5)}, cumulativef=function(x) {pgamma(x, 4, 1.5)})})
+task3.ls$ua1 <- sapply(task3.ls$x, function(x) {use.adjective(x, scale.points, 40, -0.1, densityf=function(x) {dgamma(x, 4, 1.5)}, cumulativef=function(x) {pgamma(x, 4, 1.5)})})
+task3.ls$ua2 <- sapply(task3.ls$x, function(x) {use.adjective(x, scale.points, 40, 0, densityf=function(x) {dgamma(x, 4, 1.5)}, cumulativef=function(x) {pgamma(x, 4, 1.5)})})
+
+task3.md <- data.frame(x=scale.points)
+task3.md$ua0 <- sapply(task3.md$x, function(x) {use.adjective(x, scale.points, 40, 0.1, densityf=function(x) {dnorm(x, 9, 2)}, cumulativef=function(x) {pnorm(x, 9, 2)})})
+task3.md$ua1 <- sapply(task3.md$x, function(x) {use.adjective(x, scale.points, 40, -0.1, densityf=function(x) {dnorm(x, 9, 2)}, cumulativef=function(x) {pnorm(x, 9, 2)})})
+task3.md$ua2 <- sapply(task3.md$x, function(x) {use.adjective(x, scale.points, 40, 0, densityf=function(x) {dnorm(x, 9, 2)}, cumulativef=function(x) {pnorm(x, 9, 2)})})
+
 # check cor between predicted and observed data
-cor(..., ..., method="pearson")
+gbp <- subset(data.gaus, Adjective == "big")$percentage
+lsbp <- subset(data.left, Adjective == "big")$percentage
+mdbp <- subset(data.moved, Adjective == "big")$percentage
+
+cor(task3.guas$ua0 * 100, gbp, method="pearson")
+cor(task3.guas$ua1 * 100, gbp, method="pearson")
+cor(task3.guas$ua2 * 100, gbp, method="pearson")
+
+cor(task3.ls$ua0 * 100, lsbp, method="pearson")
+cor(task3.ls$ua1 * 100, lsbp, method="pearson")
+cor(task3.ls$ua2 * 100, lsbp, method="pearson")
+
+cor(task3.md$ua0 * 100, mdbp, method="pearson")
+cor(task3.md$ua1 * 100, mdbp, method="pearson")
+cor(task3.md$ua2 * 100, mdbp, method="pearson")
 
 #install.packages("BayesianTools")
 library(BayesianTools)
