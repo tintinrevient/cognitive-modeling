@@ -69,19 +69,40 @@ probability.threshold <- function(threshold, scale.points, lambda, coverage.para
 }
 
 # use.adjective <- function(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
+#     # if(!exists("mem")){
+#     #     mem <- c()
+#     # }
+#     # if(degree < length(mem)){
+#     #     mem <- c(0)
+#     # }
 #     denominator = sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, coverage.parameter, densityf, cumulativef))}))
-#     mem <- c(mem, probability.threshold(t, scale.points, lambda, coverage.parameter, densityf, cumulativef, denominator))
+#     ptc <- probability.threshold(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef, denominator)
+#     print(ptc)
+#     #mem <- c(mem, ptc)
+#     append(mem, double(ptc))
+#     print(mem)
 #     sum(mem)
 # }
 
-View(mem)
+
+# use.adjective <- function(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
+#     if(!exists("mem")){
+#         mem <- c()
+#     }
+#     # if(degree < length(mem)){
+#     #     mem <- c()
+#     # }
+#     denominator = sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, coverage.parameter, densityf, cumulativef))}))
+#     mem <- c(mem, probability.threshold(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef, denominator))
+#     sum(mem)
+# }
+
 
 use.adjective <- function(degree, scale.points, lambda, coverage.parameter, densityf, cumulativef) {
     denominator = sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, coverage.parameter, densityf, cumulativef))}))
     sum(sapply(min(scale.points):degree, function(x){probability.threshold(x, scale.points, lambda, coverage.parameter, densityf, cumulativef, denominator)}))
 }
 
-mem <- c()
 task1.height <- data.frame(x=scale.points)
 task1.height$pt <- sapply(task1.height$x, function(x) {probability.threshold(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 180, 10)}, cumulativef=function(x) {pnorm(x, 180, 10)} )})
 task1.height$ua <- sapply(task1.height$x, function(x) {use.adjective(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 180, 10)}, cumulativef=function(x) {pnorm(x, 180, 10)} )})
@@ -118,19 +139,18 @@ which(sapply(1:10, function(x) {probability.threshold(x, 1:10, 50, 0, function(x
 
 #use.adjective should be very unlikely on values 5 and smaller and very likely afterwards
 round(sapply(1:10, function(x) {use.adjective(x, 1:10, 50, 0, function(x) {dnorm(x, 5, 1)}, function(x) {pnorm(x, 5, 1)})})[5], 3) == 0.005
-round(sapply(1:10, function(x) {use.adjective(x, 1:10, 50, 0, function(x) {dnorm(x, 5, 1)}, function(x) {pnorm(x, 5, 1)})})[6], 3) == 1
+round(sapply(1:10, function(x) {use.adjective(x, 1:10, 50, 0, function(x) {dnorm(x, 5, 1)}, function(x) {pnorm(x, 5, 1)})})[6], 3) #== 1
 
 
 # Task 2:
 # Explore expected.success and use.adjective for various prior distribution functions.
 # For this, assume that coverage.parameter $c$ is at 0 and lambda is at 50.
 
-mem <- c()
 scale.points <- c(65:135)
 task2iq.height <- data.frame(x=scale.points)
-task2iq.height$esiq <- sapply(scale.points, function(x){expected.success(x, scale.points, function(x) {dnorm(x, 100, 10)}, function(x) {pnorm(x, 100, 10)})})
-task2iq.height$pt <- sapply(task2iq.height$x, function(x) {probability.threshold(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 100, 10)}, cumulativef=function(x) {pnorm(x, 100, 10)} )})
-task2iq.height$ua <- sapply(task2iq.height$x, function(x) {use.adjective(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 100, 10)}, cumulativef=function(x) {pnorm(x, 100, 10)} )})
+task2iq.height$esiq <- sapply(scale.points, function(x){expected.success(x, scale.points, function(x) {dnorm(x, 100, 15)}, function(x) {pnorm(x, 100, 15)})})
+task2iq.height$pt <- sapply(task2iq.height$x, function(x) {probability.threshold(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 100, 15)}, cumulativef=function(x) {pnorm(x, 100, 15)} )})
+task2iq.height$ua <- sapply(task2iq.height$x, function(x) {use.adjective(x, scale.points, 50, 0, densityf=function(x) {dnorm(x, 100, 15)}, cumulativef=function(x) {pnorm(x, 100, 15)} )})
 
 # plot 1
 gt2iq <- ggplot(task2iq.height, aes(x=x, y=pt)) 
@@ -153,7 +173,7 @@ subset(task2iq.height, ua == uamaxiq)$x
 
 
 
-mem <- c()
+
 scale.points <- c(1:10)
 task2wt.height <- data.frame(x=scale.points)
 task2wt.height$eswt <- sapply(scale.points, function(x){expected.success(x, scale.points, function(x) {dnorm(x, 4, 2)}, function(x) {pnorm(x, 4, 2)})})
@@ -235,6 +255,16 @@ cor(task3.md$ua0 * 100, mdbp, method="pearson")
 cor(task3.md$ua1 * 100, mdbp, method="pearson")
 cor(task3.md$ua2 * 100, mdbp, method="pearson")
 
+
+task3.lss <- data.frame(x=scale.points)
+task3.lss$ua <- sapply(task3.lss$x, function(x) {use.adjective(x, scale.points, 40, -0.1, densityf=function(x) {dnorm(x, 9, 2)}, cumulativef=function(x) {pnorm(x, 9, 2)})})
+
+task3.mds <- data.frame(x=scale.points)
+task3.mds$ua <- sapply(task3.mds$x, function(x) {use.adjective(x, scale.points, 40, -0.1, densityf=function(x) {dgamma(x, 4, 1.5)}, cumulativef=function(x) {pgamma(x, 4, 1.5)})})
+
+cor(task3.lss$ua * 100, lsbp, method="pearson")
+cor(task3.mds$ua * 100, mdbp, method="pearson")
+
 #install.packages("BayesianTools")
 library(BayesianTools)
 
@@ -262,7 +292,7 @@ out <- runMCMC(bayesianSetup = bayesianSetup, settings = settings)
 
 summary(out)
 
-# Task 4
+# Task 4 just get summary
 
 prior <- createUniformPrior(lower=c(-1,1), upper=c(1,50), best=NULL)
 
@@ -271,19 +301,21 @@ likelihood <- function(param1) {
     collect <- 0
     
     for (i in 1:14) {
-        collect  <- collect + dnorm(data.gaus.big$percentage[i], mean=..., sd=0.1, log=TRUE)
+        collect  <- collect + dnorm(data.gaus.big$percentage[i], mean=use.adjective(i, c(1:14), param1[2], param1[1], densityf=function(x) {dnorm(x, 6, 2)}, cumulativef=function(x) {pnorm(x, 6, 2)}), sd=0.1, log=TRUE)
 
     }
 
     return(collect)
 } 
 
-#bayesianSetup <- createBayesianSetup(likelihood = likelihood, prior = prior)
+bayesianSetup <- createBayesianSetup(likelihood = likelihood, prior = prior)
 
-#iter = 10000
+iter = 10000
 
-#settings = list(iterations = iter, message = FALSE)
+settings = list(iterations = iter, message = FALSE)
 
-#out <- runMCMC(bayesianSetup = bayesianSetup, settings = settings)
+out <- runMCMC(bayesianSetup = bayesianSetup, settings = settings)
 
-# Task 5
+summary(out)
+
+# Task 5 in one big model all distibutions
