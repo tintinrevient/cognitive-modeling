@@ -202,11 +202,244 @@ use.adjective(30, scale.points, lambda, c, densityf, cumulativef, denominator)
 
 
 # Task 3
+data.adjective <- read.csv(file="adjective-data.csv", header=TRUE)
+
+gaussian.dist <- c(1,2,3,4,5,6,5,4,3,2,1,0,0,0)
+left.skew.dist <- c(2,5,6,6,5,4,3,2,1,1,1,0,0,0)
+moved.dist <- c(0,0,0,1,2,3,4,5,6,5,4,3,2,1)
+right.skew.dist <- c(1,1,1,2,3,4,5,6,6,5,2,0,0,0)
+
+df <- as.data.frame(gaussian.dist)
+ggplot(df, aes(x=df$gaussian.dist)) + geom_bar()
+
+data.gaus <- data.adjective[data.adjective$Distribution=="gaussian",]
+data.left <- data.adjective[data.adjective$Distribution=="left",]
+data.moved <- data.adjective[data.adjective$Distribution=="moved",]
+
+p.g <- ggplot(data.gaus,aes(x=Stimulus,y=100*percentage,colour=Adjective))+geom_line()+ ylab("Percentage") +ggtitle("gaussian")
+p.l <- ggplot(data.left,aes(x=Stimulus,y=100*percentage,colour=Adjective))+geom_line()+ ylab("Percentage")+ggtitle("left skewed")
+p.m <- ggplot(data.moved,aes(x=Stimulus,y=100*percentage,colour=Adjective))+geom_line()+ ylab("Percentage")+ggtitle("moved")
+
+# "big" correlation
+
+# user data
+data.gaus.big <- subset(data.gaus, Adjective == "big")
+data.left.big <- subset(data.left, Adjective == "big")
+data.moved.big <- subset(data.moved, Adjective == "big")
+
+# model gaussian
+scale.points <- c(1:14)
+lambda <- 40
+c <- 0 # c = 0.1, -0.1, 0
+densityf <- function(x) {dnorm(x, 6, 2)}
+cumulativef <- function(x) {pnorm(x, 6, 2)}
+denominator <- sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, c, densityf, cumulativef))}))
+
+Stimulus <- c()
+percentage <- c()
+for(i in 1:14) {
+  Stimulus <- c(Stimulus, i)
+  x <- use.adjective(i, scale.points, lambda, c, densityf, cumulativef, denominator)
+  percentage <- c(percentage, x)
+}
+model.gaus.big <- data.frame(Stimulus, percentage)
+
+cor.test(data.gaus.big$percentage, model.gaus.big$percentage)
+
+# model left skewed
+scale.points <- c(1:14)
+lambda <- 40
+c <- -0.1 # c = 0.1, -0.1, 0
+densityf <- function(x) {dgamma(x, shape = 4, scale = 1.5)}
+cumulativef <- function(x) {pgamma(x, shape = 4, scale = 1.5)}
+denominator <- sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, c, densityf, cumulativef))}))
+
+Stimulus <- c()
+percentage <- c()
+for(i in 1:14) {
+  Stimulus <- c(Stimulus, i)
+  x <- use.adjective(i, scale.points, lambda, c, densityf, cumulativef, denominator)
+  percentage <- c(percentage, x)
+}
+model.left.big <- data.frame(Stimulus, percentage)
+
+cor.test(data.left.big$percentage, model.left.big$percentage)
+
+# model moved
+scale.points <- c(1:14)
+lambda <- 40
+c <- -0.1 # c = 0.1, -0.1, 0
+densityf <- function(x) {dnorm(x, 9, 2)}
+cumulativef <- function(x) {pnorm(x, 9, 2)}
+denominator <- sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, c, densityf, cumulativef))}))
+
+Stimulus <- c()
+percentage <- c()
+for(i in 1:14) {
+  Stimulus <- c(Stimulus, i)
+  x <- use.adjective(i, scale.points, lambda, c, densityf, cumulativef, denominator)
+  percentage <- c(percentage, x)
+}
+model.moved.big <- data.frame(Stimulus, percentage)
+
+cor.test(data.moved.big$percentage, model.moved.big$percentage)
+
+# model left skewed: gamma -> normal
+scale.points <- c(1:14)
+lambda <- 40
+c <- -0.1 # c = 0.1, -0.1, 0
+densityf <- function(x) {dnorm(x, 9, 2)}
+cumulativef <- function(x) {pnorm(x, 9, 2)}
+denominator <- sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, c, densityf, cumulativef))}))
+
+Stimulus <- c()
+percentage <- c()
+for(i in 1:14) {
+  Stimulus <- c(Stimulus, i)
+  x <- use.adjective(i, scale.points, lambda, c, densityf, cumulativef, denominator)
+  percentage <- c(percentage, x)
+}
+model.left.big <- data.frame(Stimulus, percentage)
+
+cor.test(data.left.big$percentage, model.left.big$percentage)
+
+# model moved: normal -> gamma
+scale.points <- c(1:14)
+lambda <- 40
+c <- -0.1 # c = 0.1, -0.1, 0
+densityf <- function(x) {dgamma(x, shape = 4, scale = 1.5)}
+cumulativef <- function(x) {pgamma(x, shape = 4, scale = 1.5)}
+denominator <- sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, c, densityf, cumulativef))}))
+
+Stimulus <- c()
+percentage <- c()
+for(i in 1:14) {
+  Stimulus <- c(Stimulus, i)
+  x <- use.adjective(i, scale.points, lambda, c, densityf, cumulativef, denominator)
+  percentage <- c(percentage, x)
+}
+model.moved.big <- data.frame(Stimulus, percentage)
+
+cor.test(data.moved.big$percentage, model.moved.big$percentage)
+
+# Task 4
+# install.packages('BayesianTools')
+
+# Example
+library(BayesianTools)
+
+# P(A): probability of param1, param1 = p1 + p2
+prior <- createUniformPrior(lower = c(0, 0.1), upper = c(0.1, 1), best = NULL)
+
+data.gaus.big <- subset(data.gaus, Adjective == "big")
+
+# P(B|A): 
+likelihood <- function(param1) {
+  
+  collect <- 0
+  
+  for (i in 1:14) {
+    collect  <- collect + dnorm(data.gaus.big$percentage[i], mean=param1[1]+param1[2], sd=0.1, log=TRUE)
+    
+  }
+  
+  return(collect)
+} 
+
+bayesianSetup <- createBayesianSetup(likelihood = likelihood, prior = prior)
+
+iter = 10000
+settings = list(iterations = iter, message = FALSE)
+out <- runMCMC(bayesianSetup = bayesianSetup, settings = settings)
+
+summary(out)
+
+# data.gaus.big
+prior <- createUniformPrior(lower = c(-1, 1), upper = c(1, 50), best = NULL)
+
+data.gaus.big <- subset(data.gaus, Adjective == "big")
+
+scale.points <- c(1:14)
+lambda <- 40
+c <- -1
+densityf <- function(x) {dnorm(x, 6, 2)}
+cumulativef <- function(x) {pnorm(x, 6, 2)}
+denominator <- sum(sapply(c(1:14), function(x) {exp(lambda * utility(x, scale.points, c, densityf, cumulativef))}))
+
+# P(B|A): 
+likelihood <- function(param1) {
+  
+  collect <- 0
+  
+  for (i in 1:14) {
+    collect  <- collect + dnorm(data.gaus.big$percentage[i], mean=use.adjective(i, scale.points, param1[2], param1[1], densityf, cumulativef, denominator), sd=0.1, log=TRUE)
+    
+  }
+  
+  return(collect)
+} 
+
+bayesianSetup <- createBayesianSetup(likelihood = likelihood, prior = prior)
+
+iter = 10000
+settings = list(iterations = iter, message = FALSE)
+out <- runMCMC(bayesianSetup = bayesianSetup, settings = settings)
+
+summary(out)
+
+# Task 5
+
+prior <- createUniformPrior(lower = c(-1, 1), upper = c(1, 50), best = NULL)
+
+data.gaus.big <- subset(data.gaus, Adjective == "big")
+data.left.big <- subset(data.left, Adjective == "big")
+data.moved.big <- subset(data.moved, Adjective == "big")
+
+data.gaus.pointy <- subset(data.gaus, Adjective == "pointy")
+data.left.pointy <- subset(data.left, Adjective == "pointy")
+data.moved.pointy <- subset(data.moved, Adjective == "pointy")
+
+data.gaus.tall <- subset(data.gaus, Adjective == "tall")
+data.left.tall <- subset(data.left, Adjective == "tall")
+data.moved.tall <- subset(data.moved, Adjective == "tall")
+
+scale.points <- c(1:14)
+lambda <- 40
+c <- -1
+
+denominator.gaus <- sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, c, function(x) {dnorm(x, 6, 2)}, function(x) {pnorm(x, 6, 2)}))}))
+denominator.left <- sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, c, function(x) {dgamma(x, shape = 4, scale = 1.5)}, function(x) {pgamma(x, shape = 4, scale = 1.5)}))}))
+denominator.moved <- sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, c, function(x) {dnorm(x, 9, 2)}, function(x) {pnorm(x, 9, 2)}))}))
 
 
+# P(B|A): 
+likelihood <- function(param1) {
+  
+  collect <- 0
+  
+  for (i in 1:14) {
+    collect  <- collect + 
+      dnorm(data.gaus.big$percentage[i], mean=use.adjective(i, scale.points, param1[2], param1[1], function(x) {dnorm(x, 6, 2)}, function(x) {pnorm(x, 6, 2)}, denominator.gaus), sd=0.1, log=TRUE) +
+      dnorm(data.gaus.pointy$percentage[i], mean=use.adjective(i, scale.points, param1[2], param1[1], function(x) {dnorm(x, 6, 2)}, function(x) {pnorm(x, 6, 2)}, denominator.gaus), sd=0.1, log=TRUE) +
+      dnorm(data.gaus.tall$percentage[i], mean=use.adjective(i, scale.points, param1[2], param1[1], function(x) {dnorm(x, 6, 2)}, function(x) {pnorm(x, 6, 2)}, denominator.gaus), sd=0.1, log=TRUE) +
+      dnorm(data.left.big$percentage[i], mean=use.adjective(i, scale.points, param1[2], param1[1], function(x) {dgamma(x, shape = 4, scale = 1.5)}, function(x) {pgamma(x, shape = 4, scale = 1.5)}, denominator.left), sd=0.1, log=TRUE) +
+      dnorm(data.left.pointy$percentage[i], mean=use.adjective(i, scale.points, param1[2], param1[1], function(x) {dgamma(x, shape = 4, scale = 1.5)}, function(x) {pgamma(x, shape = 4, scale = 1.5)}, denominator.left), sd=0.1, log=TRUE) +
+      dnorm(data.left.tall$percentage[i], mean=use.adjective(i, scale.points, param1[2], param1[1], function(x) {dgamma(x, shape = 4, scale = 1.5)}, function(x) {pgamma(x, shape = 4, scale = 1.5)}, denominator.left), sd=0.1, log=TRUE) +
+      dnorm(data.moved.big$percentage[i], mean=use.adjective(i, scale.points, param1[2], param1[1], function(x) {dnorm(x, 9, 2)}, function(x) {pnorm(x, 9, 2)}, denominator.moved), sd=0.1, log=TRUE) +
+      dnorm(data.moved.pointy$percentage[i], mean=use.adjective(i, scale.points, param1[2], param1[1], function(x) {dnorm(x, 9, 2)}, function(x) {pnorm(x, 9, 2)}, denominator.moved), sd=0.1, log=TRUE) +
+      dnorm(data.moved.tall$percentage[i], mean=use.adjective(i, scale.points, param1[2], param1[1], function(x) {dnorm(x, 9, 2)}, function(x) {pnorm(x, 9, 2)}, denominator.moved), sd=0.1, log=TRUE)
+  }
+  
+  return(collect)
+} 
 
+bayesianSetup <- createBayesianSetup(likelihood = likelihood, prior = prior)
 
+iter = 10000
+settings = list(iterations = iter, message = FALSE)
+out <- runMCMC(bayesianSetup = bayesianSetup, settings = settings)
 
+summary(out)
 
 
 
