@@ -271,6 +271,8 @@ library(BayesianTools)
 prior <- createUniformPrior(lower=c(0,0.1), upper=c(0.1,1), best=NULL)
 
 data.gaus.big <- subset(data.gaus, Adjective == "big")
+data.gaus.pointy <- subset(data.gaus, Adjective == "pointy")
+data.gaus.tall <- subset(data.gaus, Adjective == "tall")
 
 likelihood <- function(param1) {
 
@@ -302,9 +304,9 @@ likelihood <- function(param1) {
     
     for (i in 1:14) {
         collect  <- collect + dnorm(data.gaus.big$percentage[i], mean=use.adjective(i, c(1:14), param1[2], param1[1], densityf=function(x) {dnorm(x, 6, 2)}, cumulativef=function(x) {pnorm(x, 6, 2)}), sd=0.1, log=TRUE)
-
+        
     }
-
+    
     return(collect)
 } 
 
@@ -319,3 +321,30 @@ out <- runMCMC(bayesianSetup = bayesianSetup, settings = settings)
 summary(out)
 
 # Task 5 in one big model all distibutions
+
+prior <- createUniformPrior(lower=c(-1,1), upper=c(1,50), best=NULL)
+
+likelihood <- function(param1) {
+    
+    collect <- 0
+    
+    for (i in 1:14) {
+        cob <- dnorm(data.gaus.big$percentage[i], mean=use.adjective(i, c(1:14), param1[2], param1[1], densityf=function(x) {dnorm(x, 6, 2)}, cumulativef=function(x) {pnorm(x, 6, 2)}), sd=0.1, log=TRUE)
+        cop <- dnorm(data.gaus.pointy$percentage[i], mean=use.adjective(i, c(1:14), param1[2], param1[1], densityf=function(x) {dnorm(x, 6, 2)}, cumulativef=function(x) {pnorm(x, 6, 2)}), sd=0.1, log=TRUE)
+        cot <- dnorm(data.gaus.tall$percentage[i], mean=use.adjective(i, c(1:14), param1[2], param1[1], densityf=function(x) {dnorm(x, 6, 2)}, cumulativef=function(x) {pnorm(x, 6, 2)}), sd=0.1, log=TRUE)
+        collect  <- collect + ((cob + cop + cot) / 3)
+        
+    }
+    
+    return(collect)
+} 
+
+bayesianSetup <- createBayesianSetup(likelihood = likelihood, prior = prior)
+
+iter = 10000
+
+settings = list(iterations = iter, message = FALSE)
+
+out <- runMCMC(bayesianSetup = bayesianSetup, settings = settings)
+
+summary(out)
