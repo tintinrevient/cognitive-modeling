@@ -360,16 +360,14 @@ prior <- createUniformPrior(lower = c(-1, 1), upper = c(1, 50), best = NULL)
 data.gaus.big <- subset(data.gaus, Adjective == "big")
 
 scale.points <- c(1:14)
-lambda <- 40
-c <- -1
 densityf <- function(x) {dnorm(x, 6, 2)}
 cumulativef <- function(x) {pnorm(x, 6, 2)}
-denominator <- sum(sapply(c(1:14), function(x) {exp(lambda * utility(x, scale.points, c, densityf, cumulativef))}))
 
 # P(B|A): 
 likelihood <- function(param1) {
   
   collect <- 0
+  denominator <- sum(sapply(c(1:14), function(x) {exp(param1[2] * utility(x, scale.points, param1[1], densityf, cumulativef))}))
   
   for (i in 1:14) {
     collect  <- collect + dnorm(data.gaus.big$percentage[i], mean=use.adjective(i, scale.points, param1[2], param1[1], densityf, cumulativef, denominator), sd=0.1, log=TRUE)
@@ -404,18 +402,14 @@ data.left.tall <- subset(data.left, Adjective == "tall")
 data.moved.tall <- subset(data.moved, Adjective == "tall")
 
 scale.points <- c(1:14)
-lambda <- 40
-c <- -1
-
-denominator.gaus <- sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, c, function(x) {dnorm(x, 6, 2)}, function(x) {pnorm(x, 6, 2)}))}))
-denominator.left <- sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, c, function(x) {dgamma(x, shape = 4, scale = 1.5)}, function(x) {pgamma(x, shape = 4, scale = 1.5)}))}))
-denominator.moved <- sum(sapply(scale.points, function(x) {exp(lambda * utility(x, scale.points, c, function(x) {dnorm(x, 9, 2)}, function(x) {pnorm(x, 9, 2)}))}))
-
 
 # P(B|A): 
 likelihood <- function(param1) {
   
   collect <- 0
+  denominator.gaus <- sum(sapply(scale.points, function(x) {exp(param1[2] * utility(x, scale.points, param1[1], function(x) {dnorm(x, 6, 2)}, function(x) {pnorm(x, 6, 2)}))}))
+  denominator.left <- sum(sapply(scale.points, function(x) {exp(param1[2] * utility(x, scale.points, param1[1], function(x) {dgamma(x, shape = 4, scale = 1.5)}, function(x) {pgamma(x, shape = 4, scale = 1.5)}))}))
+  denominator.moved <- sum(sapply(scale.points, function(x) {exp(param1[2] * utility(x, scale.points, param1[1], function(x) {dnorm(x, 9, 2)}, function(x) {pnorm(x, 9, 2)}))}))
   
   for (i in 1:14) {
     collect  <- collect + 
